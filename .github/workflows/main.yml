@@ -25,18 +25,23 @@ jobs:
         opam repo add coq-released https://coq.inria.fr/opam/released
         opam update -y
         opam install -y coq.8.11.1
-    - name: Install deps
-        opam install -y coq-equations
 
     - name: Clone bug minimizer
       run: |
         git clone https://github.com/JasonGross/coq-tools.git
         sudo cp coq-tools/*.py /usr/bin/
-        
+
     - name: Run minimizer
       run: ./run.sh
       timeout-minutes: 330 # Each job in a workflow can run for up to 6 hours of execution time, we want to make sure there's time to upload the files
-    
+
+    - name: Upload output file
+      uses: actions/upload-artifact@v2
+      with:
+        name: bug.v
+        path: bug.v
+      if: always()
+
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
@@ -45,4 +50,3 @@ jobs:
         # A file, directory or wildcard pattern that describes what to upload
         path: .
       if: always()
-     
