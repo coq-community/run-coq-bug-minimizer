@@ -3,6 +3,7 @@
 set -ex
 
 opam install -y coq-equations dune
+eval $(opam env)
 git clone https://github.com/Mbodin/coq-prelude.git --branch=bug
 cd coq-prelude
 dune build @all || true
