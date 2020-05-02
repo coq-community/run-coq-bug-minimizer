@@ -14,4 +14,4 @@ eval $(opam env)
 git clone https://github.com/Mbodin/coq-prelude.git --branch=bug
 cd coq-prelude
 dune build @all || true
-yes "y" | find-bug.py _build/default/theories/Control/List.v _build/default/theories/bug.v _build/default/theories/tmp.v -f _CoqProject -Q theories Fake -l - ../bug.log
+(yes "y" || true) | find-bug.py _build/default/theories/Control/List.v _build/default/theories/bug.v _build/default/theories/tmp.v -f _CoqProject -Q theories Fake -l - ../bug.log
