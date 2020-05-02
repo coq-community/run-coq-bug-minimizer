@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function cleanup() {
-    cp -f theories/bug.v ../bug.v
+    cp -f _build/default/theories/bug.v ../bug.v
     exit 1
 }
 
@@ -14,4 +14,4 @@ eval $(opam env)
 git clone https://github.com/Mbodin/coq-prelude.git --branch=bug
 cd coq-prelude
 dune build @all || true
-yes "y" | find-bug.py theories/Control/List.v theories/bug.v -f _CoqProject -l - ../bug.log
+yes "y" | find-bug.py _build/default/theories/Control/List.v _build/default/theories/bug.v -f _CoqProject -l - ../bug.log
