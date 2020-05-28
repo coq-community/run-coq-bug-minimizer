@@ -34,6 +34,9 @@ jobs:
     - name: Run minimizer
       run: ./run.sh
       timeout-minutes: 330 # Each job in a workflow can run for up to 6 hours of execution time, we want to make sure there's time to upload the files
+    
+    - run: cat bug.v
+      if: always()
 
     - name: Upload output file
       uses: actions/upload-artifact@v2
