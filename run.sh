@@ -13,7 +13,7 @@ trap cleanup SIGINT SIGKILL EXIT
 
 set -ex
 
-# opam install -y coq-equations dune
+opam install -y coq-ext-lib # dune
 eval $(opam env)
 git clone https://github.com/satnam6502/oak-hardware
 cd oak-hardware
