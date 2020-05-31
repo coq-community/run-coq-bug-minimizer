@@ -6,6 +6,13 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 function cleanup() {
     cp -f "bug_01.v" "$DIR/bug.v"
+    if [ -f "$DIR/bug.v" ]; then
+        touch "$DIR/build.log" "$DIR/bug.log"
+        bash "$DIR/reply-coqbot.sh" "$(cat coqbot-request-stamp)" "$FILE" "$DIR/bug.v" "$DIR/build.log" "$DIR/bug.log"
+    else
+        touch "$DIR/build.log"
+        bash "$DIR/reply-coqbot-error.sh" "$(cat coqbot-request-stamp)" "$FILE" "$DIR/build.log"
+    fi
     exit $RC
 }
 
