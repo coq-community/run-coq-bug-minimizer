@@ -20,7 +20,7 @@ trap cleanup SIGINT SIGKILL EXIT
 
 set -x
 
-source "$DIR/coqbot.sh" 2>"$DIR/log"
+source "$DIR/coqbot.sh" >"$DIR/build.log" 2>&1
 
 cat "$DIR/build.log"
 
