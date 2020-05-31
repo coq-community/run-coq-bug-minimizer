@@ -5,7 +5,7 @@ RC=1
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 function cleanup() {
-    cp -f "bug_01.v" "$DIR/bug.v"
+    cp -f "bug_01.v" "$DIR/bug.v" || RC=$?
     if [ -f "$DIR/bug.v" ]; then
         touch "$DIR/build.log" "$DIR/bug.log"
         bash "$DIR/reply-coqbot.sh" "$(cat coqbot-request-stamp)" "$FILE" "$DIR/bug.v" "$DIR/build.log" "$DIR/bug.log"
@@ -21,8 +21,6 @@ trap cleanup SIGINT SIGKILL EXIT
 set -x
 
 source "$DIR/coqbot.sh" 2>"$DIR/log"
-
-set -e
 
 cat "$DIR/build.log"
 
