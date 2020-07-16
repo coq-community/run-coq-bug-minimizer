@@ -6,4 +6,4 @@ export nl=$'\n'
 export start_code='```'"${nl}"
 export start_coq_code='```coq'"${nl}"
 export end_code="${nl}"'```'
-export COQBOT_URL=''
+export COQBOT_URL="$(cat "$DIR/coqbot.url")"
