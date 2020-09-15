@@ -17,22 +17,28 @@ BASE_OPAM="num zarith.1.9.1 ocamlfind.1.8.1 ounit2.2.2.3 odoc.1.5.0"
 CI_OPAM="menhir.20190626 ocamlgraph.1.8.8"
 BASE_ONLY_OPAM="elpi.1.11.0"
 
-#opam switch "$COMPILER" || opam switch create "$COMPILER"
-#eval $(opam env)
-#opam update
-#opam install $BASE_OPAM $CI_OPAM $BASE_ONLY_OPAM
+opam switch "$COMPILER" || opam switch create "$COMPILER"
+eval $(opam env)
+opam update
+opam install $BASE_OPAM $CI_OPAM $BASE_ONLY_OPAM
 
 COMPILER_EDGE="4.10.0"
 BASE_OPAM_EDGE="dune.2.5.1 dune-release.1.3.3 ocamlformat.0.14.2"
 
-opam switch create "${COMPILER_EDGE}+flambda" && eval $(opam env) && \
-    opam install $BASE_OPAM $BASE_OPAM_EDGE $CI_OPAM
+#opam switch create "${COMPILER_EDGE}+flambda" && eval $(opam env) && \
+#    opam install $BASE_OPAM $BASE_OPAM_EDGE $CI_OPAM
 
 if [ ! -f coq_failing.zip ]; then
-    wget https://gitlab.com/coq/coq/-/jobs/735893270/artifacts/download -O coq_failing.zip
+    # edge+flambda
+    #wget https://gitlab.com/coq/coq/-/jobs/735893270/artifacts/download -O coq_failing.zip
+    # build:base
+    wget https://gitlab.com/coq/coq/-/jobs/735893267/artifacts/download -O coq_failing.zip
 fi
 if [ ! -f coq_passing.zip ]; then
-    wget https://gitlab.com/coq/coq/-/jobs/735636738/artifacts/download -O coq_passing.zip
+    # edge+flambda
+    # wget https://gitlab.com/coq/coq/-/jobs/735636738/artifacts/download -O coq_passing.zip
+    # build:base
+    wget https://gitlab.com/coq/coq/-/jobs/735636736/artifacts/download -O coq_passing.zip
 fi
 COQ_FAILING_SHA=708c67a75ee72ac2b8e6330bef10a9665c3366fd
 COQ_PASSING_SHA=9278a6ec5b0cc33691b441beaa73cf38f04f4cbb
