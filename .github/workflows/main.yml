@@ -20,12 +20,6 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v2
 
-    - name: Set up Coq
-      run: |
-        opam repo add coq-released https://coq.inria.fr/opam/released
-        opam update -y
-        opam install -y coq.8.12.0
-
     - name: Clone bug minimizer
       run: |
         git clone https://github.com/JasonGross/coq-tools.git
