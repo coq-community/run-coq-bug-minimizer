@@ -15,7 +15,7 @@ jobs:
     - name: Set up OCaml
       uses: avsm/setup-ocaml@v1.0.1
       with:
-        ocaml-version: 4.08.1 # optional, default is 4.08.1
+        ocaml-version: 4.10.0+flambda # optional, default is 4.08.1
 
     - name: Setup Python
       uses: actions/setup-python@v2
@@ -24,7 +24,7 @@ jobs:
       run: |
         opam repo add coq-released https://coq.inria.fr/opam/released
         opam update -y
-        opam install -y coq.8.11.1
+        opam install -y coq.8.12.0
 
     - name: Clone bug minimizer
       run: |
@@ -34,7 +34,7 @@ jobs:
     - name: Run minimizer
       run: ./run.sh
       timeout-minutes: 330 # Each job in a workflow can run for up to 6 hours of execution time, we want to make sure there's time to upload the files
-    
+
     - run: cat bug.v
       if: always()
 
