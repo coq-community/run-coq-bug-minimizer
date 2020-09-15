@@ -15,7 +15,7 @@ jobs:
     - name: Set up OCaml
       uses: avsm/setup-ocaml@v1.0.1
       with:
-        ocaml-version: 4.10.0+flambda # optional, default is 4.08.1
+        ocaml-version: 4.05.0 # optional, default is 4.08.1
 
     - name: Setup Python
       uses: actions/setup-python@v2

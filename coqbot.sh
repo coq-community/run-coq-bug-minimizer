@@ -17,7 +17,7 @@ BASE_OPAM="num zarith.1.9.1 ocamlfind.1.8.1 ounit2.2.2.3 odoc.1.5.0"
 CI_OPAM="menhir.20190626 ocamlgraph.1.8.8"
 BASE_ONLY_OPAM="elpi.1.11.0"
 
-opam switch "$COMPILER" || opam switch create "$COMPILER"
+opam switch "$COMPILER" || opam switch create "$COMPILER" || exit $?
 eval $(opam env)
 opam update
 opam install -y $BASE_OPAM $CI_OPAM $BASE_ONLY_OPAM
