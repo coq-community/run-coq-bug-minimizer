@@ -20,13 +20,13 @@ BASE_ONLY_OPAM="elpi.1.11.0"
 opam switch "$COMPILER" || opam switch create "$COMPILER"
 eval $(opam env)
 opam update
-opam install $BASE_OPAM $CI_OPAM $BASE_ONLY_OPAM
+opam install -y $BASE_OPAM $CI_OPAM $BASE_ONLY_OPAM
 
 COMPILER_EDGE="4.10.0"
 BASE_OPAM_EDGE="dune.2.5.1 dune-release.1.3.3 ocamlformat.0.14.2"
 
 #opam switch create "${COMPILER_EDGE}+flambda" && eval $(opam env) && \
-#    opam install $BASE_OPAM $BASE_OPAM_EDGE $CI_OPAM
+#    opam install -y $BASE_OPAM $BASE_OPAM_EDGE $CI_OPAM
 
 if [ ! -f coq_failing.zip ]; then
     # edge+flambda
