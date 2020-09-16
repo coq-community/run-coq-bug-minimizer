@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -o pipefail
+
 RC=1
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -23,7 +25,8 @@ set -x
 
 if [ ! -f "$DIR/build.log.orig" ]; then
 
-source "$DIR/coqbot.sh" >"$DIR/build.log" 2>&1
+#source "$DIR/coqbot.sh" >"$DIR/build.log" 2>&1
+source "$DIR/coqbot.sh" 2>&1 | tee "$DIR/build.log"
 cp "$DIR/build.log" "$DIR/build.log.orig"
 
 else

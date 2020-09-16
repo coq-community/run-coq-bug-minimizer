@@ -65,17 +65,17 @@ for dir in /builds/coq/coq-{failing,passing}/_install_ci/bin; do
                 mv "$i" "$i.orig"
                 cat > "$i" <<EOF
 #!/usr/bin/env bash
-echo "MINIMIZER_DEBUG: \$0: COQPATH=\$COQPATH"
+echo "MINIMIZER_DEBUG: \$0: COQPATH=\$COQPATH" >&2
 function call_orig() {
-  set -ex
+#  set -ex
   exec $dir/$i.orig "\$@"
 }
 
 function quote() {
-  xargs printf "%q "
+  xargs printf "%q " >&2
 }
 
-echo -n "MINIMIZER_DEBUG: exec: "
+echo -n "MINIMIZER_DEBUG: exec: " >&2
 echo "$dir/$i.orig" | quote
 next_is_dir=no
 next_is_special=no
@@ -117,7 +117,7 @@ for i in "\$@"; do
     esac
   fi
 done
-echo
+echo >&2
 exec "$dir/$i.orig" "\$@"
 EOF
                 chmod +x "$i"
