@@ -11,7 +11,7 @@ sudo dpkg --add-architecture i386
 #        python3-pip python3-setuptools python3-pexpect python3-bs4 fonts-freefont-otf \
 #        texlive-science tipa
 
-COMPILER="4.05.0"
+COMPILER="ocaml-system.4.05.0"
 
 BASE_OPAM="num zarith.1.9.1 ocamlfind.1.8.1 ounit2.2.2.3 odoc.1.5.0"
 CI_OPAM="menhir.20190626 ocamlgraph.1.8.8"
