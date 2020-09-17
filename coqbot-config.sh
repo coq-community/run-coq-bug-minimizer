@@ -17,10 +17,10 @@ export COQ_PASSING_SHA="$(echo $(cat "$DIR/coqbot.passing-sha"))"
 export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
 if [[ "${CI_TARGET}" == "TAKE FROM"* ]]; then
     CI_TARGET_FILE="$(echo "${CI_TARGET}" | sed 's/^\s*TAKE FROM //g')"
-    export CI_TARGET="$(grep '^Makefile.ci:.*recipe for target.*failed' "$(cd "$DIR" && cat "${CI_TARGET_FILE}")" | tail -1 | sed "s/^Makefile.ci:.*recipe for target '//g; s/' failed\$//g")"
+    export CI_TARGET="$(cd "$DIR" && grep '^Makefile.ci:.*recipe for target.*failed' "${CI_TARGET_FILE}" | tail -1 | sed "s/^Makefile.ci:.*recipe for target '//g; s/' failed\$//g")"
 fi
 
-if [ ! -z "${FAILING_ARTIFACT_URLS}" ] && [ ! -z "${PASSING_ARTIFACT_URLS}" ] && [ ! -z "${FAILING_SHA}" ] && [ ! -z "${PASSING_SHA}" ]; then
+if [ ! -z "${FAILING_ARTIFACT_URLS}" ] && [ ! -z "${PASSING_ARTIFACT_URLS}" ] && [ ! -z "${COQ_FAILING_SHA}" ] && [ ! -z "${COQ_PASSING_SHA}" ]; then
     export RUN_KIND=coqbot-ci
 else
     export RUN_KIND=coqbot
