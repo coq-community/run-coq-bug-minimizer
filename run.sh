@@ -28,6 +28,7 @@ source "$DIR/coqbot-config.sh"
 
 if [ "${RUN_KIND}" == "coqbot-ci" ]; then
     source "$DIR/coqbot-ci.sh" 2>&1 | tee "$DIR/build.log"
+    echo "RC: $?"
 else
     for i in coqc coqtop; do
         pushd "$(dirname "$(which "$i")")"
@@ -87,7 +88,7 @@ function coqpath_to_args() {
 
 FILE="$(tac "$DIR/build.log" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g')"
 EXEC_AND_PATH="$(tac "$DIR/build.log" | grep -A 1 -F "$FILE" | grep --max-count=1 -A 1 'MINIMIZER_DEBUG: exec')"
-EXEC="$(echo "${EXEC_AND_PATH}" | grep -o 'exec: .*' | sed 's/^exec: //g')"
+EXEC="$(echo "${EXEC_AND_PATH}" | grep -o 'exec:\? .*' | sed 's/^exec:\? //g')"
 COQPATH="$(echo "${EXEC_AND_PATH}" | grep -o 'COQPATH=.*' | sed 's/^COQPATH=//g')"
 
 FAILING_COQPATH="$COQPATH"
@@ -97,21 +98,21 @@ FAILING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2; coqpath_to_
 FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 FAILING_COQ_MAKEFILE="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coq_makefile,g')"
 
-PASSING_COQPATH="$(echo "$COQPATH" | sed 's,/builds/coq/coq-failing/,/builds/coq/coq-passing/,g')"
-PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed 's,/builds/coq/coq-failing/,/builds/coq/coq-passing/,g')"
-PASSING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2 | sed 's,/builds/coq/coq-failing/,/builds/coq/coq-passing/,g'; coqpath_to_args "${PASSING_COQPATH}") | process_args passing)"
+PASSING_COQPATH="$(echo "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
+PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
+PASSING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_COQPATH}") | process_args passing)"
 
 {
     echo "${FAILING_ARGS}"
     echo --coqc="${FAILING_COQC}"
     echo --coqtop="${FAILING_COQTOP}"
     echo --coq_makefile="${FAILING_COQ_MAKEFILE}"
-    echo --base-dir="/builds/coq/coq-failing/_build_ci/"
+    echo --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/"
     if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
         # are running with two versions
         echo "${PASSING_ARGS}"
         echo --passing-coqc="${PASSING_COQC}"
-        echo --passing-base-dir="/builds/coq/coq-passing/_build_ci/"
+        echo --passing-base-dir="${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/"
     fi
     echo -l
     echo -

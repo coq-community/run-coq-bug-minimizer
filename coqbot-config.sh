@@ -15,6 +15,7 @@ export PASSING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.passing-artifact-urls"))
 export COQ_FAILING_SHA="$(echo $(cat "$DIR/coqbot.failing-sha"))"
 export COQ_PASSING_SHA="$(echo $(cat "$DIR/coqbot.passing-sha"))"
 export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
+export CI_BASE_BUILD_DIR="$DIR/builds/coq"
 if [[ "${CI_TARGET}" == "TAKE FROM"* ]]; then
     CI_TARGET_FILE="$(echo "${CI_TARGET}" | sed 's/^\s*TAKE FROM //g')"
     export CI_TARGET="$(cd "$DIR" && grep '^Makefile.ci:.*recipe for target.*failed' "${CI_TARGET_FILE}" | tail -1 | sed "s/^Makefile.ci:.*recipe for target '//g; s/' failed\$//g")"
@@ -28,40 +29,35 @@ fi
 
 function wrap_file() {
     local file="$1"
-    if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]]; then
+    # coqdep output needs to be pristine for use in coq_makefile;
+    # coq_makefile errors if -o is given a non-relative path / a path
+    # to something not in the current directory, so we just exclude
+    # these two files
+    if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]]; then
         if [ ! -f "$file.orig" ]; then
             mv "$file" "$file.orig"
             cat > "$file" <<EOF
 #!/usr/bin/env bash
-echo "MINIMIZER_DEBUG: \$0: COQPATH=\$COQPATH" >&2
-function call_orig() {
-#  set -ex
-  exec $PWD/$file.orig "\$@"
-}
 
-function quote() {
-  xargs printf "%q " >&2
-}
+args=("$PWD/$file.orig")
 
-echo -n "MINIMIZER_DEBUG: exec: " >&2
-echo "$PWD/$file.orig" | quote
 next_is_dir=no
 next_is_special=no
 next_next_is_special=no
 for i in "\$@"; do
   if [ "\${next_is_dir}" == "yes" ]; then
-    readlink -f "\$i" | quote
+    args+=("\$(readlink -f "\$i")")
     next_is_dir=no
     next_is_special="\${next_next_is_special}"
     next_next_is_special=no
   elif [ "\${next_is_special}" == "yes" ]; then
-    echo "\$i" | quote
+    args+=("\$i")
     next_is_special="\${next_next_is_special}"
     next_next_is_special=no
   elif [[ "\$i" == *".v" ]]; then
-    readlink -f "\$i" | quote
+    args+=("\$(readlink -f "\$i")")
   else
-    echo "\$i" | quote
+    args+=("\$i")
     case "\$i" in
       -R|-Q)
         next_is_dir=yes
@@ -85,8 +81,11 @@ for i in "\$@"; do
     esac
   fi
 done
-echo >&2
-exec "$PWD/$file.orig" "\$@"
+
+echo "MINIMIZER_DEBUG: \$0: COQPATH=\$COQPATH" >&2
+echo -n "MINIMIZER_DEBUG: exec: " >&2
+printf "%q " "\${args[@]}" >&2
+exec "\${args[@]}"
 EOF
             chmod +x "$file"
         fi
