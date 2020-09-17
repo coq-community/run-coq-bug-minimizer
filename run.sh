@@ -5,8 +5,9 @@ set -o pipefail
 RC=1
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-BUG_FILE="$DIR/cwd/bug_01.v"
-TEMP_FILE="$DIR/cwd/tmp.v"
+BUG_TMP_DIR="$DIR/cwd"
+BUG_FILE="${BUG_TMP_DIR}/bug_01.v"
+TMP_FILE="${BUG_TMP_DIR}/tmp.v"
 FINAL_BUG_FILE="$DIR/bug.v" # must not change, since the deploy/artifact script looks for it
 
 function cleanup() {
@@ -28,16 +29,21 @@ set -x
 
 source "$DIR/coqbot-config.sh"
 
-if [ "${RUN_KIND}" == "coqbot-ci" ]; then
-    source "$DIR/coqbot-ci.sh" 2>&1 | tee "$DIR/build.log"
-else
-    for i in coqc coqtop; do
-        pushd "$(dirname "$(which "$i")")"
-        wrap_file "$i"
-        popd
-    done
+# Kludge for quicker running locally
+if [ ! -f "$DIR/build.log.orig" ]; then
+    if [ "${RUN_KIND}" == "coqbot-ci" ]; then
+        source "$DIR/coqbot-ci.sh" 2>&1 | tee "$DIR/build.log"
+    else
+        for i in coqc coqtop; do
+            pushd "$(dirname "$(which "$i")")"
+            wrap_file "$i"
+            popd
+        done
 
-    source "$DIR/coqbot.sh" 2>&1 | tee "$DIR/build.log"
+        source "$DIR/coqbot.sh" 2>&1 | tee "$DIR/build.log"
+    fi
+else
+    cp -f "$DIR/build.log.orig" "$DIR/build.log"
 fi
 
 set -x
@@ -104,11 +110,11 @@ PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_B
 PASSING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_COQPATH}") | process_args passing)"
 
 mkdir -p "$(dirname "${BUG_FILE}")"
-mkdir -p "$(dirname "${TEMP_FILE}")"
+mkdir -p "$(dirname "${TMP_FILE}")"
 
 cd "$(dirname "${BUG_FILE}")"
 
-args=("-y" "$FILE" "${BUG_FILE}" "${TEMP_FILE}" --no-deps --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/")
+args=("-y" "$FILE" "${BUG_FILE}" "${TMP_FILE}" --no-deps --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top)
 while IFS= read -r line; do
     args+=("$line")
 done <<< "${FAILING_ARGS}"
