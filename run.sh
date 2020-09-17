@@ -98,4 +98,4 @@ FAILING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2; coqpath_to_
 PASSING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2 | sed 's,/builds/coq/coq-failing/,/builds/coq/coq-passing/,g'; coqpath_to_args "${PASSING_COQPATH}") | process_args passing)"
 FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 
-(echo "${FAILING_ARGS}"; echo "${PASSING_ARGS}"; echo -l; echo -; echo "$DIR/bug.log") | xargs find-bug.py -y "$FILE" "$DIR/bug_01.v" "$DIR/tmp.v" --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --passing-coqc="${PASSING_COQC}" --passing-base-dir="/builds/coq/coq-passing/_build_ci/" --base-dir="/builds/coq/coq-failing/_build_ci/" && RC=0
+(echo "${FAILING_ARGS}"; echo "${PASSING_ARGS}"; echo -l; echo -; echo "$DIR/bug.log") | xargs find-bug.py -y "$FILE" "$DIR/bug_01.v" "$DIR/tmp.v" --no-deps --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --passing-coqc="${PASSING_COQC}" --passing-base-dir="/builds/coq/coq-passing/_build_ci/" --base-dir="/builds/coq/coq-failing/_build_ci/" && RC=0
