@@ -5,14 +5,16 @@ set -o pipefail
 RC=1
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-BUG_FILE="$DIR/bug_01.v"
+BUG_FILE="$DIR/cwd/bug_01.v"
+TEMP_FILE="$DIR/cwd/tmp.v"
+FINAL_BUG_FILE="$DIR/bug.v" # must not change, since the deploy/artifact script looks for it
 
 function cleanup() {
-    cp -f "${BUG_FILE}" "$DIR/bug.v" || RC=$?
+    cp -f "${BUG_FILE}" "${FINAL_BUG_FILE}" || RC=$?
     STAMP="$(cat "$DIR/coqbot-request-stamp")"
-    if [ -f "$DIR/bug.v" ]; then
+    if [ -f "${FINAL_BUG_FILE}" ]; then
         touch "$DIR/build.log" "$DIR/bug.log"
-        bash "$DIR/reply-coqbot.sh" "$STAMP" "$FILE" "$DIR/bug.v" "$DIR/build.log" "$DIR/bug.log"
+        bash "$DIR/reply-coqbot.sh" "$STAMP" "$FILE" "${FINAL_BUG_FILE}" "$DIR/build.log" "$DIR/bug.log"
     else
         touch "$DIR/build.log"
         bash "$DIR/reply-coqbot-error.sh" "$STAMP" "$FILE" "$DIR/build.log"
@@ -28,7 +30,6 @@ source "$DIR/coqbot-config.sh"
 
 if [ "${RUN_KIND}" == "coqbot-ci" ]; then
     source "$DIR/coqbot-ci.sh" 2>&1 | tee "$DIR/build.log"
-    echo "RC: $?"
 else
     for i in coqc coqtop; do
         pushd "$(dirname "$(which "$i")")"
@@ -88,8 +89,8 @@ function coqpath_to_args() {
 
 FILE="$(tac "$DIR/build.log" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g')"
 EXEC_AND_PATH="$(tac "$DIR/build.log" | grep -A 1 -F "$FILE" | grep --max-count=1 -A 1 'MINIMIZER_DEBUG: exec')"
-EXEC="$(echo "${EXEC_AND_PATH}" | grep -o 'exec:\? .*' | sed 's/^exec:\? //g')"
-COQPATH="$(echo "${EXEC_AND_PATH}" | grep -o 'COQPATH=.*' | sed 's/^COQPATH=//g')"
+EXEC="$(echo "${EXEC_AND_PATH}" | grep 'MINIMIZER_DEBUG: exec' | grep -o 'exec:\? .*' | sed 's/^exec:\? //g')"
+COQPATH="$(echo "${EXEC_AND_PATH}" | grep -v 'MINIMIZER_DEBUG: exec' | grep -o 'COQPATH=.*' | sed 's/^COQPATH=//g')"
 
 FAILING_COQPATH="$COQPATH"
 FAILING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1)"
@@ -102,19 +103,23 @@ PASSING_COQPATH="$(echo "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing
 PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 PASSING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_COQPATH}") | process_args passing)"
 
-{
-    echo "${FAILING_ARGS}"
-    echo --coqc="${FAILING_COQC}"
-    echo --coqtop="${FAILING_COQTOP}"
-    echo --coq_makefile="${FAILING_COQ_MAKEFILE}"
-    echo --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/"
-    if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
-        # are running with two versions
-        echo "${PASSING_ARGS}"
-        echo --passing-coqc="${PASSING_COQC}"
-        echo --passing-base-dir="${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/"
-    fi
-    echo -l
-    echo -
-    echo "$DIR/bug.log"
-} | xargs find-bug.py -y "$FILE" "${BUG_FILE}" "$DIR/tmp.v" --no-deps && RC=0
+mkdir -p "$(dirname "${BUG_FILE}")"
+mkdir -p "$(dirname "${TEMP_FILE}")"
+
+cd "$(dirname "${BUG_FILE}")"
+
+args=("-y" "$FILE" "${BUG_FILE}" "${TEMP_FILE}" --no-deps --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/")
+while IFS= read -r line; do
+    args+=("$line")
+done <<< "${FAILING_ARGS}"
+if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
+    # are running with two versions
+    args+=(--passing-coqc="${PASSING_COQC}" --passing-base-dir="${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/")
+    while IFS= read -r line; do
+        args+=("$line")
+    done <<< "${PASSING_ARGS}"
+fi
+args+=(-l - "$DIR/bug.log")
+
+pwd
+find-bug.py "${args[@]}" && RC=0

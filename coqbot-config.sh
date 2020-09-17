@@ -85,6 +85,7 @@ done
 echo "MINIMIZER_DEBUG: \$0: COQPATH=\$COQPATH" >&2
 echo -n "MINIMIZER_DEBUG: exec: " >&2
 printf "%q " "\${args[@]}" >&2
+echo >&2
 exec "\${args[@]}"
 EOF
             chmod +x "$file"
