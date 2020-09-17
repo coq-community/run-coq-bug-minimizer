@@ -5,9 +5,10 @@ set -o pipefail
 RC=1
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+BUG_FILE="$DIR/bug_01.v"
 
 function cleanup() {
-    cp -f "bug_01.v" "$DIR/bug.v" || RC=$?
+    cp -f "${BUG_FILE}" "$DIR/bug.v" || RC=$?
     STAMP="$(cat "$DIR/coqbot-request-stamp")"
     if [ -f "$DIR/bug.v" ]; then
         touch "$DIR/build.log" "$DIR/bug.log"
@@ -19,7 +20,7 @@ function cleanup() {
     exit $RC
 }
 
-#trap cleanup SIGINT SIGKILL EXIT
+trap cleanup SIGINT SIGKILL EXIT
 
 set -x
 
@@ -99,4 +100,4 @@ PASSING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2 | sed 's,/bu
 FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 FAILING_COQ_MAKEFILE="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coq_makefile,g')"
 
-(echo "${FAILING_ARGS}"; echo "${PASSING_ARGS}"; echo -l; echo -; echo "$DIR/bug.log") | xargs find-bug.py -y "$FILE" "$DIR/bug_01.v" "$DIR/tmp.v" --no-deps --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}"  --coq_makefile="${FAILING_COQ_MAKEFILE}" --passing-coqc="${PASSING_COQC}" --passing-base-dir="/builds/coq/coq-passing/_build_ci/" --base-dir="/builds/coq/coq-failing/_build_ci/" && RC=0
+(echo "${FAILING_ARGS}"; echo "${PASSING_ARGS}"; echo -l; echo -; echo "$DIR/bug.log") | xargs find-bug.py -y "$FILE" "${BUG_FILE}" "$DIR/tmp.v" --no-deps --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}"  --coq_makefile="${FAILING_COQ_MAKEFILE}" --passing-coqc="${PASSING_COQC}" --passing-base-dir="/builds/coq/coq-passing/_build_ci/" --base-dir="/builds/coq/coq-failing/_build_ci/" && RC=0
