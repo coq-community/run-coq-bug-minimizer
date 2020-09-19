@@ -1,4 +1,4 @@
-opam install -y coq.dev coq-ext-lib
+opam install -y coq.8.11 coq-ext-lib
 eval $(opam env)
 
 mkdir temp
