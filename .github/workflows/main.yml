@@ -35,3 +35,12 @@ jobs:
         # some characters are forbidden from appearing in artifacts uploaded in GH Actions
         sudo find . -name '*[":<>|\*?]*' -delete
       if: always()
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        # Artifact name
+        # name: # optional
+        # A file, directory or wildcard pattern that describes what to upload
+        path: .
+      if: always()
