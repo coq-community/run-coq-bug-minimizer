@@ -9,7 +9,6 @@ export start_coq_code='```coq'"${nl}"
 export end_code="${nl}"'```'
 export COQBOT_URL="$(cat "$DIR/coqbot.url")"
 export COMPILER="$(cat "$DIR/coqbot.compiler")"
-export OPAM_PACKAGES="$(cat "$DIR/coqbot.opam-packages")"
 export FAILING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.failing-artifact-urls"))"
 export PASSING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.passing-artifact-urls"))"
 export COQ_FAILING_SHA="$(echo $(cat "$DIR/coqbot.failing-sha"))"
