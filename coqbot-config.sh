@@ -92,4 +92,4 @@ EOF
     fi
 }
 
-export -F wrap_file
+export -f wrap_file
