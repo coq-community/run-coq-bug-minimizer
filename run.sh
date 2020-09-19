@@ -28,7 +28,6 @@ trap cleanup SIGINT SIGKILL EXIT
 set -x
 
 git clone https://github.com/JasonGross/coq-tools.git
-sudo cp coq-tools/*.py /usr/bin/
 
 source "$DIR/coqbot-config.sh"
 
@@ -131,4 +130,4 @@ fi
 args+=(-l - "$DIR/bug.log")
 
 pwd
-find-bug.py "${args[@]}" && RC=0
+python "$DIR/coq-tools/find-bug.py" "${args[@]}" && RC=0
