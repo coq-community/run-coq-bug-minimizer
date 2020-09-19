@@ -27,6 +27,9 @@ trap cleanup SIGINT SIGKILL EXIT
 
 set -x
 
+git clone https://github.com/JasonGross/coq-tools.git
+sudo cp coq-tools/*.py /usr/bin/
+
 source "$DIR/coqbot-config.sh"
 
 # Kludge for quicker running locally

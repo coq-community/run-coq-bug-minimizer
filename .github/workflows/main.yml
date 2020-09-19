@@ -12,19 +12,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up OCaml
-      uses: avsm/setup-ocaml@v1.0.1
-      with:
-        ocaml-version: 4.05.0 # optional, default is 4.08.1
-
-    - name: Setup Python
-      uses: actions/setup-python@v2
-
-    - name: Clone bug minimizer
-      run: |
-        git clone https://github.com/JasonGross/coq-tools.git
-        sudo cp coq-tools/*.py /usr/bin/
-
     - name: Run minimizer
       uses: coq-community/docker-coq-action@v1
       with:
@@ -46,7 +33,7 @@ jobs:
     - name: Remove invalid files
       run: |
         # some characters are forbidden from appearing in artifacts uploaded in GH Actions
-        find . -name '*[":<>|\*?]*' -delete
+        sudo find . -name '*[":<>|\*?]*' -delete
       if: always()
 
     - name: Upload a Build Artifact
