@@ -2,27 +2,8 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-# modified from coq/dev/ci/docker/bionic_coq/Dockerfile; TODO: better way to get the docker file
-#sudo dpkg --add-architecture i386
-
-#sudo apt-get update && sudo apt-get install --no-install-recommends -y \
-    #        m4 automake autoconf time wget rsync git gcc-multilib build-essential unzip jq \
-    #        perl libgmp-dev libgmp-dev:i386 \
-    #        libgtksourceview-3.0-dev \
-    #        texlive-latex-extra texlive-fonts-recommended texlive-xetex latexmk \
-    #        python3-pip python3-setuptools python3-pexpect python3-bs4 fonts-freefont-otf \
-    #        texlive-science tipa
-
-opam switch "$COMPILER" || opam switch create "$COMPILER" || exit $?
+opam switch "$COMPILER" || exit $?
 eval $(opam env)
-opam update || exit $?
-opam install -y ${OPAM_PACKAGES} || exit $?
-
-#COMPILER_EDGE="4.10.0"
-#BASE_OPAM_EDGE="dune.2.5.1 dune-release.1.3.3 ocamlformat.0.14.2"
-
-#opam switch create "${COMPILER_EDGE}+flambda" && eval $(opam env) && \
-    #    opam install -y $BASE_OPAM $BASE_OPAM_EDGE $CI_OPAM
 
 mkdir -p "${CI_BASE_BUILD_DIR}"
 pushd "${CI_BASE_BUILD_DIR}"

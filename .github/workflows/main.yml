@@ -26,7 +26,11 @@ jobs:
         sudo cp coq-tools/*.py /usr/bin/
 
     - name: Run minimizer
-      run: ./run.sh
+      uses: coq-community/docker-coq-action@v1
+      with:
+        opam_file: 'dummy.opam'
+        custom_image: 'registry.gitlab.com/coq/coq:bionic_coq-V2020-08-28-V92'
+        custom_script: ./run.sh
       timeout-minutes: 330 # Each job in a workflow can run for up to 6 hours of execution time, we want to make sure there's time to upload the files
 
     - run: cat bug.v
