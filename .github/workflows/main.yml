@@ -15,7 +15,7 @@ jobs:
     - name: Run minimizer
       uses: coq-community/docker-coq-action@optional-opam-file
       with:
-        #custom_image: 'registry.gitlab.com/coq/coq:CACHEKEY'
+        custom_image: 'registry.gitlab.com/coq/coq:bionic_coq-V2020-08-28-V92'
         custom_script: ./run.sh
       timeout-minutes: 330 # Each job in a workflow can run for up to 6 hours of execution time, we want to make sure there's time to upload the files
 
