@@ -1,6 +1,10 @@
 opam install -y coq.8.11 coq-ext-lib
 eval $(opam env)
 
+sudo apt-get install -y wget
+
+sudo chmod a+rw .
+
 mkdir temp
 cd temp
 wget https://github.com/coq/coq/files/4698509/bug.v.zip
