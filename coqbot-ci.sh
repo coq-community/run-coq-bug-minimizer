@@ -5,8 +5,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 opam switch "$COMPILER" || exit $?
 eval $(opam env)
 
-sudo apt-get install -y wget
-
 mkdir -p "${CI_BASE_BUILD_DIR}"
 pushd "${CI_BASE_BUILD_DIR}"
 git clone https://github.com/coq/coq.git || true
