@@ -1,6 +1,7 @@
 opam install -y coq.8.11 coq-ext-lib
 eval $(opam env)
 
+sudo apt-get update -y
 sudo apt-get install -y wget
 
 sudo chmod a+rw .
