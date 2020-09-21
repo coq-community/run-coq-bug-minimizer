@@ -27,6 +27,8 @@ trap cleanup SIGINT SIGKILL EXIT
 
 set -x
 
+sudo chmod a+rw .
+
 git clone https://github.com/JasonGross/coq-tools.git
 
 source "$DIR/coqbot-config.sh"
