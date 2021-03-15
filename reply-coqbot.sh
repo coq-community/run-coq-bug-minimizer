@@ -4,6 +4,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 . "$DIR/coqbot-config.sh"
 
+set -x
+
 id="$1"
 comment_contents="Minimized File $2"
 comment_contents+="${nl}${nl}<details><summary>Minimized Coq File</summary>${nl}${nl}${start_coq_code}$(cat "$3")${end_code}${nl}</details>"
