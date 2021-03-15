@@ -16,9 +16,9 @@ ${id}${nl}${comment_contents}
 EOF
 
 if [ ! -z "${COQBOT_URL}" ]; then
-    curl -X POST --data-binary "@${file}"
+    curl -X POST --data-binary "@${file}" "${COQBOT_URL}"
 else
-    echo curl -X POST --data-binary "@${file}" "${COQBOT_URL}"
+    echo curl -X POST --data-binary "@${file}"
     echo cat "$file"
     cat "$file"
 fi
