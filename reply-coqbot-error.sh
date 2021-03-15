@@ -22,3 +22,5 @@ else
     echo cat "$file"
     cat "$file"
 fi
+
+rm "$file"
