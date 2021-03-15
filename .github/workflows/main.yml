@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run minimizer
-      uses: coq-community/docker-coq-action@optional-opam-file
+      uses: coq-community/docker-coq-action@v1.2.2
       with:
         #custom_image: 'registry.gitlab.com/coq/coq:CACHEKEY'
         custom_script: ./run.sh
