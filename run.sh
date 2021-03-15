@@ -57,10 +57,26 @@ set -x
 
 function process_args() {
     passing_prefix="--$1"
+    known_v_file="$2"
     next_is_known=no
     next_next_is_known=no
+    prev_load=""
+    found_known_v_file=no
     while read i; do
-        if [ "${next_is_known}" == "yes" ]; then
+        if [[ "$i" == *".v" ]] && [ "$(readlink -f "${known_v_file}")" == "$(readlink -f "$i")" ]; then
+            found_known_v_file=yes
+        fi
+        if [ ! -z "${prev_load}" ]; then
+            if [ "${found_known_v_file}" == "yes" ]; then
+                : # we want to skip over loading the file which is buggy, and any loads which come after it, but we want to load files that come before it
+            else
+                echo "${prev_load}"
+                echo "${passing_prefix}-arg=$i"
+            fi
+            prev_load=""
+            next_is_known="${next_next_is_known}"
+            next_next_is_known=no
+        elif [ "${next_is_known}" == "yes" ]; then
             echo "$i"
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
@@ -76,6 +92,13 @@ function process_args() {
                 -I|-arg)
                     echo "${passing_prefix}${i}"
                     next_is_known=yes
+                    ;;
+                -l|-lv|-load-vernac-source|-load-vernac-source-verbose)
+                    prev_load="${passing_prefix}-arg=$i"
+                    next_is_known=yes
+                    ;;
+                -batch)
+                    # we already transform coqtop to coqc as necessary, so we can safely ignore -batch
                     ;;
                 *)
                     echo "${passing_prefix}-arg=$i"
@@ -106,15 +129,16 @@ EXEC="$(echo "${EXEC_AND_PATH}" | grep 'MINIMIZER_DEBUG: exec' | grep -o 'exec:\
 COQPATH="$(echo "${EXEC_AND_PATH}" | grep -v 'MINIMIZER_DEBUG: exec' | grep -o 'COQPATH=.*' | sed 's/^COQPATH=//g')"
 
 FAILING_COQPATH="$COQPATH"
-FAILING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1)"
-FAILING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2; coqpath_to_args "${FAILING_COQPATH}") | process_args nonpassing)"
+# some people (like Iris) like to use `coqtop -batch -lv` or similar to process a .v file, so we replace coqtop with coqc
+FAILING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed 's,bin/coqtop,bin/coqc,g')"
+FAILING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2; coqpath_to_args "${FAILING_COQPATH}") | process_args nonpassing "${FILE}")"
 
 FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 FAILING_COQ_MAKEFILE="$(cd "$(dirname "${FAILING_COQC}")" && readlink -f coq_makefile)"
 
 PASSING_COQPATH="$(echo "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
-PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
-PASSING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_COQPATH}") | process_args passing)"
+PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g')"
+PASSING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_COQPATH}") | process_args passing "${FILE}")"
 
 mkdir -p "$(dirname "${BUG_FILE}")"
 mkdir -p "$(dirname "${TMP_FILE}")"
