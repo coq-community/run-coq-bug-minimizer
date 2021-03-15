@@ -17,8 +17,8 @@ function cleanup() {
         touch "$DIR/build.log" "$DIR/bug.log"
         bash "$DIR/reply-coqbot.sh" "$STAMP" "$FILE" "${FINAL_BUG_FILE}" "$DIR/build.log" "$DIR/bug.log"
     else
-        touch "$DIR/build.log"
-        bash "$DIR/reply-coqbot-error.sh" "$STAMP" "$FILE" "$DIR/build.log"
+        touch "$DIR/build.log" "$DIR/bug.log"
+        bash "$DIR/reply-coqbot-error.sh" "$STAMP" "$FILE" "$DIR/build.log" "$DIR/bug.log"
     fi
     exit $RC
 }
