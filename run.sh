@@ -145,6 +145,15 @@ mkdir -p "$(dirname "${TMP_FILE}")"
 
 cd "$(dirname "${BUG_FILE}")"
 
+for VAR in FAILING_COQC FAILING_COQTOP FAILING_COQ_MAKEFILE PASSING_COQC; do
+    if [ ! -x "${${VAR}}" ]; then
+        echo "Error: Could not find ${VAR} ('${${VAR}}')" | tee -a "$DIR/bug.log" >&2
+        echo "Files in '$(dirname ${${VAR}})':" | tee -a "$DIR/bug.log" >&2
+        find "$(dirname ${${VAR}})" | tee -a "$DIR/bug.log" >&2
+        exit 1
+    fi
+done
+
 args=("-y" "$FILE" "${BUG_FILE}" "${TMP_FILE}" --no-deps --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top)
 while IFS= read -r line; do
     args+=("$line")
