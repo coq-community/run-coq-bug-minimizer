@@ -31,6 +31,9 @@ sudo chmod a+rw .
 
 git clone https://github.com/JasonGross/coq-tools.git
 
+# kludge around python not existing in docker-coq
+which python || sudo apt-get install -y python
+
 source "$DIR/coqbot-config.sh"
 
 # Kludge for quicker running locally
