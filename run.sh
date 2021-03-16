@@ -57,8 +57,10 @@ set -x
 
 function process_args() {
     passing_prefix=""
+    prefixed_arg="--arg"
     if [ ! -z "$1" ]; then
         passing_prefix="--$1"
+        prefixed_arg="--$1-arg"
     fi
     known_v_file="$2"
     next_is_known=no
@@ -74,7 +76,7 @@ function process_args() {
                 : # we want to skip over loading the file which is buggy, and any loads which come after it, but we want to load files that come before it
             else
                 echo "${prev_load}"
-                echo "${passing_prefix}-arg=$i"
+                echo "${prefixed_arg}=$i"
             fi
             prev_load=""
             next_is_known="${next_next_is_known}"
@@ -92,19 +94,23 @@ function process_args() {
                     next_is_known=yes
                     next_next_is_known=yes
                     ;;
-                -I|-arg)
+                -I)
                     echo "${passing_prefix}${i}"
                     next_is_known=yes
                     ;;
+                -arg)
+                    echo "${prefixed_arg}"
+                    next_is_known=yes
+                    ;;
                 -l|-lv|-load-vernac-source|-load-vernac-source-verbose)
-                    prev_load="${passing_prefix}-arg=$i"
+                    prev_load="${prefixed_arg}=$i"
                     next_is_known=yes
                     ;;
                 -batch)
                     # we already transform coqtop to coqc as necessary, so we can safely ignore -batch
                     ;;
                 *)
-                    echo "${passing_prefix}-arg=$i"
+                    echo "${prefixed_arg}=$i"
                     ;;
             esac
         fi
