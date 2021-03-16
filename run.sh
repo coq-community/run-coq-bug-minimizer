@@ -56,7 +56,10 @@ fi
 set -x
 
 function process_args() {
-    passing_prefix="--$1"
+    passing_prefix=""
+    if [ ! -z "$1" ]; then
+        passing_prefix="--$1"
+    fi
     known_v_file="$2"
     next_is_known=no
     next_next_is_known=no
@@ -131,13 +134,22 @@ COQPATH="$(echo "${EXEC_AND_PATH}" | grep -v 'MINIMIZER_DEBUG: exec' | grep -o '
 FAILING_COQPATH="$COQPATH"
 # some people (like Iris) like to use `coqtop -batch -lv` or similar to process a .v file, so we replace coqtop with coqc
 FAILING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed 's,bin/coqtop,bin/coqc,g')"
-FAILING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2; coqpath_to_args "${FAILING_COQPATH}") | process_args nonpassing "${FILE}")"
 
 FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 FAILING_COQ_MAKEFILE="$(cd "$(dirname "${FAILING_COQC}")" && readlink -f coq_makefile)"
 
 PASSING_COQPATH="$(echo "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g')"
+
+if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
+    # we are running with two versions
+    NONPASSING_PREFIX="nonpassing"
+else
+    # we are running only with one version of coqc, so the minimizer doesn't support --nonpassing prefixes
+    NONPASSING_PREFIX=""
+fi
+
+FAILING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2; coqpath_to_args "${FAILING_COQPATH}") | process_args "${NONPASSING_PREFIX}" "${FILE}")"
 PASSING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_COQPATH}") | process_args passing "${FILE}")"
 
 mkdir -p "$(dirname "${BUG_FILE}")"
