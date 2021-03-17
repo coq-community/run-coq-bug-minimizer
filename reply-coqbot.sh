@@ -9,8 +9,9 @@ set -x
 id="$1"
 comment_contents="Minimized File $2"
 comment_contents+="${nl}${nl}<details><summary>Minimized Coq File</summary>${nl}${nl}${start_coq_code}$(cat "$3")${end_code}${nl}</details>"
-comment_contents+="${nl}${nl}<details><summary>Build Log</summary>${nl}${nl}${start_code}$(cat "$4")${end_code}${nl}</details>"
-comment_contents+="${nl}${nl}<details><summary>Minimization Log</summary>${nl}${nl}${start_code}$(cat "$5")${end_code}${nl}</details>"
+comment_contents+="${nl}${nl}<details><summary>Intermediate Coq File (useful for debugging if minimization did not go as far as you wanted)</summary>${nl}${nl}${start_coq_code}$(cat "$4")${end_code}${nl}</details>"
+comment_contents+="${nl}${nl}<details><summary>Build Log</summary>${nl}${nl}${start_code}$(cat "$5")${end_code}${nl}</details>"
+comment_contents+="${nl}${nl}<details><summary>Minimization Log</summary>${nl}${nl}${start_code}$(cat "$6")${end_code}${nl}</details>"
 comment_contents+="${nl}${nl}$(cat "$DIR/feedback.md")"
 
 file="$(mktemp)"

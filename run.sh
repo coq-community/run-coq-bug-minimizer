@@ -14,8 +14,8 @@ function cleanup() {
     cp -f "${BUG_FILE}" "${FINAL_BUG_FILE}" || RC=$?
     STAMP="$(cat "$DIR/coqbot-request-stamp")"
     if [ -f "${FINAL_BUG_FILE}" ]; then
-        touch "$DIR/build.log" "$DIR/bug.log"
-        bash "$DIR/reply-coqbot.sh" "$STAMP" "$FILE" "${FINAL_BUG_FILE}" "$DIR/build.log" "$DIR/bug.log"
+        touch "${TMP_FILE}" "$DIR/build.log" "$DIR/bug.log"
+        bash "$DIR/reply-coqbot.sh" "$STAMP" "$FILE" "${FINAL_BUG_FILE}" "${TMP_FILE}" "$DIR/build.log" "$DIR/bug.log"
     else
         touch "$DIR/build.log" "$DIR/bug.log"
         bash "$DIR/reply-coqbot-error.sh" "$STAMP" "$FILE" "$DIR/build.log" "$DIR/bug.log"
