@@ -173,12 +173,14 @@ for VAR in FAILING_COQC FAILING_COQTOP FAILING_COQ_MAKEFILE PASSING_COQC; do
     fi
 done
 
+mkdir -p "${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/"
 args=("-y" "$FILE" "${BUG_FILE}" "${TMP_FILE}" --no-deps --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top)
 while IFS= read -r line; do
     args+=("$line")
 done <<< "${FAILING_ARGS}"
 if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
     # are running with two versions
+    mkdir -p "${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/"
     args+=(--passing-coqc="${PASSING_COQC}" --passing-base-dir="${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/")
     while IFS= read -r line; do
         args+=("$line")
