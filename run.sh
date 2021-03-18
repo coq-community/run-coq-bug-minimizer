@@ -188,6 +188,10 @@ if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
 fi
 args+=(-l - "$DIR/bug.log")
 
-pwd
 # allow coqbot.sh to set extra_args
+if [ -f "$DIR/extra-args.sh" ]; then
+    source "$DIR/extra-args.sh"
+fi
+
+pwd
 "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" "${extra_args[@]}" && RC=0
