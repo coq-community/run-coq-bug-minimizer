@@ -189,4 +189,5 @@ fi
 args+=(-l - "$DIR/bug.log")
 
 pwd
-"$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" && RC=0
+# allow coqbot.sh to set extra_args
+"$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" "${extra_args[@]}" && RC=0
