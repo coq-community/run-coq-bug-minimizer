@@ -7,7 +7,9 @@ export backtick='`'
 export start_code='```'"${nl}"
 export start_coq_code='```coq'"${nl}"
 export end_code="${nl}"'```'
-export GITHUB_WORKFLOW_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+. "$DIR/github-url.sh"
+
 export COQBOT_URL="$(cat "$DIR/coqbot.url")"
 export COMPILER="$(cat "$DIR/coqbot.compiler")"
 export FAILING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.failing-artifact-urls"))"

@@ -13,6 +13,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Stamp URL
+      run: |
+        echo '#!/usr/bin/env bash' > github-url.sh
+        echo "export GITHUB_WORKFLOW_URL='https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}'" >> github-url.sh
     - name: Run minimizer
       uses: coq-community/docker-coq-action@v1.2.2
       with:
