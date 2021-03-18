@@ -10,8 +10,6 @@ BUG_FILE="${BUG_TMP_DIR}/bug_01.v"
 TMP_FILE="${BUG_TMP_DIR}/tmp.v"
 FINAL_BUG_FILE="$DIR/bug.v" # must not change, since the deploy/artifact script looks for it
 
-env
-
 function cleanup() {
     cp -f "${BUG_FILE}" "${FINAL_BUG_FILE}" || RC=$?
     STAMP="$(cat "$DIR/coqbot-request-stamp")"

@@ -13,7 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: env
     - name: Run minimizer
       uses: coq-community/docker-coq-action@v1.2.2
       with:
