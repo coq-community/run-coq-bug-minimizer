@@ -21,7 +21,7 @@ jobs:
       uses: coq-community/docker-coq-action@v1.2.2
       with:
         #custom_image: 'registry.gitlab.com/coq/coq:CACHEKEY'
-        custom_script: ./run.sh
+        custom_script: ./timeout-run.sh
       timeout-minutes: 330 # Each job in a workflow can run for up to 6 hours of execution time, we want to make sure there's time to upload the files
 
     - run: cat bug.v
@@ -32,6 +32,27 @@ jobs:
       with:
         name: bug.v
         path: bug.v
+      if: always()
+
+    - name: Upload output log
+      uses: actions/upload-artifact@v2
+      with:
+        name: bug.log
+        path: bug.log
+      if: always()
+
+    - name: Upload build log
+      uses: actions/upload-artifact@v2
+      with:
+        name: build.log
+        path: build.log
+      if: always()
+
+    - name: Upload temp file
+      uses: actions/upload-artifact@v2
+      with:
+        name: tmp.v
+        path: tmp.v
       if: always()
 
     - name: Remove invalid files
