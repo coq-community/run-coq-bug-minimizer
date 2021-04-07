@@ -37,6 +37,17 @@ fi
 
 source "$DIR/coqbot-config.sh"
 
+if [ -z "$TIMEOUT" ]; then
+    # use 5h15m as the timeout; the timeout for this stage is 5h30m, so we leave a generous allotment for docker
+    TIMEOUT=18900
+fi
+
+START_TIME="$(date +%s)"
+
+function seconds_left() {
+    echo "$((${TIMEOUT} - ($(date +%s) - ${START_TIME})))"
+}
+
 # Kludge for quicker running locally
 if [ ! -f "$DIR/build.log.orig" ]; then
     if [ "${RUN_KIND}" == "coqbot-ci" ]; then
@@ -194,4 +205,4 @@ if [ -f "$DIR/extra-args.sh" ]; then
 fi
 
 pwd
-"$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" "${extra_args[@]}" && RC=0
+timeout "$(seconds_left)" "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" "${extra_args[@]}" && RC=0

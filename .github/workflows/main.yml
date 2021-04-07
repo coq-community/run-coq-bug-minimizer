@@ -21,7 +21,7 @@ jobs:
       uses: coq-community/docker-coq-action@v1.2.2
       with:
         #custom_image: 'registry.gitlab.com/coq/coq:CACHEKEY'
-        custom_script: ./timeout-run.sh
+        custom_script: ./run.sh
       timeout-minutes: 330 # Each job in a workflow can run for up to 6 hours of execution time, we want to make sure there's time to upload the files
 
     - run: cat bug.v
