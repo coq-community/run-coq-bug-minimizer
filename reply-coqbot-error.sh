@@ -9,8 +9,8 @@ set -x
 
 id="$1"
 comment_contents="Error: Could not minimize file $2 (full log [on GitHub Actions](${GITHUB_WORKFLOW_URL}))"
-comment_contents+="${nl}<details><summary>build log</summary>${nl}${nl}${start_code}$(cat "$3")${end_code}${nl}</details>"
-comment_contents+="${nl}<details><summary>minimizer log</summary>${nl}${nl}${start_code}$(cat "$4")${end_code}${nl}</details>"
+comment_contents+="$(print_file "build log" "${start_code}" "$3" "${end_code}")"
+comment_contents+="$(print_file "minimizer log" "${start_code}" "$4" "${end_code}")"
 comment_contents+="${nl}${nl}$(cat "$DIR/feedback.md")"
 
 file="$(mktemp)"

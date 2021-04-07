@@ -103,3 +103,27 @@ EOF
 }
 
 export -f wrap_file
+
+if [ -z "${MAX_FILE_SIZE}" ]; then
+    # 1MiB in bytes
+    MAX_FILE_SIZE="$((1 * 1024 * 1024))"
+fi
+
+# print_file title start_code filepath end_code
+function print_file() {
+    filesize="$(stat -c%s "$3")"
+    title="$1"
+    if (( filesize > MAX_FILE_SIZE )); then
+        title="${title} (truncated to $(numfmt --to=iec-i --suffix=B "${MAX_FILE_SIZE}"); full file on [GitHub Actions Artifacts](${GITHUB_WORKFLOW_URL}) under ${backtick}$(realpath --relative-to "$DIR" "$3")${backtick})"
+        contents="$(head -c ${MAX_FILE_SIZE} "$3")"
+    else
+        contents="$(cat "$3")"
+    fi
+    echo -n "${nl}${nl}<details><summary>${title}</summary>${nl}${nl}"
+    echo -n "$2" # start code
+    echo -n "${contents}"
+    echo -n "$4" # end code
+    echo -n "${nl}</details>"
+}
+
+export -f print_file
