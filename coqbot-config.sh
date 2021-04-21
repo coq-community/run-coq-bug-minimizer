@@ -25,6 +25,8 @@ export COQ_FAILING_SHA="$(echo $(cat "$DIR/coqbot.failing-sha"))"
 export COQ_PASSING_SHA="$(echo $(cat "$DIR/coqbot.passing-sha"))"
 export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
 export CI_BASE_BUILD_DIR="$DIR/builds/coq"
+export GITHUB_MAX_CHAR_COUNT="65536"
+
 if [[ "${CI_TARGET}" == "TAKE FROM"* ]]; then
     CI_TARGET_FILE="$(echo "${CI_TARGET}" | sed 's/^\s*TAKE FROM //g')"
     export CI_TARGET="$(cd "$DIR" && grep '^Makefile.ci:.*recipe for target.*failed' "${CI_TARGET_FILE}" | tail -1 | sed "s/^Makefile.ci:.*recipe for target '//g; s/' failed\$//g")"
@@ -104,25 +106,21 @@ EOF
 
 export -f wrap_file
 
-if [ -z "${MAX_FILE_SIZE}" ]; then
-    # 1MiB in bytes
-    MAX_FILE_SIZE="$((1 * 1024 * 1024))"
-fi
-
-# print_file title start_code filepath end_code
+# print_file max_len title start_code filepath end_code
 function print_file() {
-    filesize="$(stat -c%s "$3")"
-    title="$1"
-    if (( filesize > MAX_FILE_SIZE )); then
-        title="${title} (truncated to $(numfmt --to=iec-i --suffix=B "${MAX_FILE_SIZE}"); full file on [GitHub Actions Artifacts](${GITHUB_WORKFLOW_URL}) under ${backtick}$(realpath --relative-to "$DIR" "$3")${backtick})"
-        contents="$(head -c ${MAX_FILE_SIZE} "$3")"
+    filesize="$(stat -c%s "$4")"
+    max_file_size="$1"
+    title="$2"
+    if (( filesize > max_file_size )); then
+        title="${title} (truncated to $(numfmt --to=iec-i --suffix=B "${max_file_size}"); full file on [GitHub Actions Artifacts](${GITHUB_WORKFLOW_URL}) under ${backtick}$(realpath --relative-to "$DIR" "$4")${backtick})"
+        contents="$(head -c ${max_file_size} "$4")"
     else
-        contents="$(cat "$3")"
+        contents="$(cat "$4")"
     fi
     echo -n "${nl}${nl}<details><summary>${title}</summary>${nl}${nl}"
-    echo -n "$2" # start code
+    echo -n "$3" # start code
     echo -n "${contents}"
-    echo -n "$4" # end code
+    echo -n "$5" # end code
     echo -n "${nl}</details>"
 }
 
