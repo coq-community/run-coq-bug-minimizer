@@ -112,7 +112,9 @@ function print_file() {
     max_file_size="$1"
     title="$2"
     if (( filesize > max_file_size )); then
-        title="${title} (truncated to $(numfmt --to=iec-i --suffix=B "${max_file_size}"); full file on [GitHub Actions Artifacts](${GITHUB_WORKFLOW_URL}) under ${backtick}$(realpath --relative-to "$DIR" "$4")${backtick})"
+        filesize_pretty="$(numfmt --to=iec-i --suffix=B "${filesize}")"
+        max_file_size_pretty="$(numfmt --to=iec-i --suffix=B "${max_file_size}")"
+        title="${title} (truncated to ${max_file_size_pretty}; full ${filesize_pretty} file on <a href=\"${GITHUB_WORKFLOW_URL}\">GitHub Actions Artifacts</a> under <code>$(realpath --relative-to "$DIR" "$4")</code>)"
         contents="$(head -c ${max_file_size} "$4")"
     else
         contents="$(cat "$4")"
