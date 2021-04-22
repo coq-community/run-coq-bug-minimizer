@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Should be invoked from run.sh
 
-set -o pipefail
+set -e -o pipefail
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
@@ -145,10 +145,10 @@ mkdir -p "$(dirname "${TMP_FILE}")"
 cd "$(dirname "${BUG_FILE}")"
 
 for VAR in FAILING_COQC FAILING_COQTOP FAILING_COQ_MAKEFILE PASSING_COQC; do
-    if [ ! -x "${${VAR}}" ]; then
-        echo "Error: Could not find ${VAR} ('${${VAR}}')" | tee -a "$DIR/bug.log" >&2
-        echo "Files in '$(dirname ${${VAR}})':" | tee -a "$DIR/bug.log" >&2
-        find "$(dirname ${${VAR}})" | tee -a "$DIR/bug.log" >&2
+    if [ ! -x "${!VAR}" ]; then
+        echo "Error: Could not find ${VAR} ('${!VAR}')" | tee -a "$DIR/bug.log" >&2
+        echo "Files in '$(dirname ${!VAR})':" | tee -a "$DIR/bug.log" >&2
+        find "$(dirname ${!VAR})" | tee -a "$DIR/bug.log" >&2
         exit 1
     fi
 done
