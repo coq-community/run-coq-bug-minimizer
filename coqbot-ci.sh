@@ -18,34 +18,34 @@ cp -a coq coq-passing
 pushd coq-failing
 git checkout ${COQ_FAILING_SHA}
 for i in ${FAILING_ARTIFACT_URLS}; do
-    wget $i -O artifact.zip
-    unzip -o artifact.zip
+    wget $i -O artifact.zip || exit $?
+    unzip -o artifact.zip || exit $?
 done
 popd
 
 pushd coq-passing
 git checkout ${COQ_PASSING_SHA}
 for i in ${PASSING_ARTIFACT_URLS}; do
-    wget $i -O artifact.zip
-    unzip -o artifact.zip
+    wget $i -O artifact.zip || exit $?
+    unzip -o artifact.zip || exit $?
 done
 popd
 
 for dir in "${CI_BASE_BUILD_DIR}"/coq-{failing,passing}/_install_ci/bin; do
-    pushd "$dir" >/dev/null
+    pushd "$dir" >/dev/null || exit $?
     for i in $(ls); do
-        wrap_file "$i"
+        wrap_file "$i" || exit $?
     done
     popd >/dev/null
 done
 
 set +x
 
-pushd "${CI_BASE_BUILD_DIR}"/coq-passing
+pushd "${CI_BASE_BUILD_DIR}"/coq-passing || exit $?
 make -f Makefile.ci GITLAB_CI=1 ${CI_TARGET} || exit $?
 popd
 
-pushd "${CI_BASE_BUILD_DIR}"/coq-failing
+pushd "${CI_BASE_BUILD_DIR}"/coq-failing || exit $?
 make -f Makefile.ci GITLAB_CI=1 ${CI_TARGET} 2>&1 || true
 popd
 

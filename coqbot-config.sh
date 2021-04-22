@@ -46,7 +46,7 @@ function wrap_file() {
     # these two files
     if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]]; then
         if [ ! -f "$file.orig" ]; then
-            mv "$file" "$file.orig"
+            mv "$file" "$file.orig" || exit $?
             cat > "$file" <<EOF
 #!/usr/bin/env bash
 
