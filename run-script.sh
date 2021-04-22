@@ -28,7 +28,7 @@ if [ ! -f "$DIR/build.log.orig" ]; then
             popd
         done
 
-        source "$DIR/coqbot.sh" 2>&1 | tee "$DIR/build.log"
+        source "$DIR/coqbot.sh" 2>&1 | tee "$DIR/build.log" || true
     fi
 else
     cp -f "$DIR/build.log.orig" "$DIR/build.log"
