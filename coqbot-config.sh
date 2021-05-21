@@ -108,21 +108,35 @@ export -f wrap_file
 
 # print_file max_len title start_code filepath end_code
 function print_file() {
-    filesize="$(stat -c%s "$4")"
-    max_file_size="$1"
-    title="$2"
+    head_tail="$1"
+    filesize="$(stat -c%s "$5")"
+    max_file_size="$2"
+    title="$3"
     if (( filesize > max_file_size )); then
         filesize_pretty="$(numfmt --to=iec-i --suffix=B "${filesize}")"
         max_file_size_pretty="$(numfmt --to=iec-i --suffix=B "${max_file_size}")"
-        title="${title} (truncated to ${max_file_size_pretty}; full ${filesize_pretty} file on <a href=\"${GITHUB_WORKFLOW_URL}\">GitHub Actions Artifacts</a> under <code>$(realpath --relative-to "$DIR" "$4")</code>)"
-        contents="$(head -c ${max_file_size} "$4")"
+        case "${head_tail}" in
+            head)
+                contents="$(head -c ${max_file_size} "$5")"
+                truncated=""
+                ;;
+            tail)
+                contents="$(tail -c ${max_file_size} "$5")"
+                truncated="last "
+                ;;
+            *)
+                contents="Invalid head_tail='${head_tail}'$(echo; head -c ${max_file_size} "$5")"
+                truncated=""
+                ;;
+        esac
+        title="${title} (truncated to ${truncated}${max_file_size_pretty}; full ${filesize_pretty} file on <a href=\"${GITHUB_WORKFLOW_URL}\">GitHub Actions Artifacts</a> under <code>$(realpath --relative-to "$DIR" "$4")</code>)"
     else
-        contents="$(cat "$4")"
+        contents="$(cat "$5")"
     fi
     echo -n "${nl}${nl}<details><summary>${title}</summary>${nl}${nl}"
-    echo -n "$3" # start code
+    echo -n "$4" # start code
     echo -n "${contents}"
-    echo -n "$5" # end code
+    echo -n "$6" # end code
     echo -n "${nl}</details>"
 }
 

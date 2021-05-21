@@ -8,10 +8,10 @@ set -x
 
 id="$1"
 comment_contents="Minimized File $2 (full log [on GitHub Actions](${GITHUB_WORKFLOW_URL}))"
-comment_contents+="$(print_file "$(( ${GITHUB_MAX_CHAR_COUNT} / 2 ))" "Minimized Coq File" "${start_coq_code}" "$3" "${end_code}")"
-comment_contents+="$(print_file "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Intermediate Coq File (useful for debugging if minimization did not go as far as you wanted)" "${start_coq_code}" "$4" "${end_code}")"
-comment_contents+="$(print_file "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Build Log" "${start_code}" "$5" "${end_code}")"
-comment_contents+="$(print_file "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Minimization Log" "${start_code}" "$6" "${end_code}")"
+comment_contents+="$(print_file head "$(( ${GITHUB_MAX_CHAR_COUNT} / 2 ))" "Minimized Coq File" "${start_coq_code}" "$3" "${end_code}")"
+comment_contents+="$(print_file head "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Intermediate Coq File (useful for debugging if minimization did not go as far as you wanted)" "${start_coq_code}" "$4" "${end_code}")"
+comment_contents+="$(print_file tail "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Build Log" "${start_code}" "$5" "${end_code}")"
+comment_contents+="$(print_file tail "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Minimization Log" "${start_code}" "$6" "${end_code}")"
 comment_contents+="${nl}${nl}$(cat "$DIR/feedback.md")"
 
 file="$(mktemp)"
