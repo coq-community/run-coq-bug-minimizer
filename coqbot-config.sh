@@ -112,31 +112,34 @@ function print_file() {
     filesize="$(stat -c%s "$5")"
     max_file_size="$2"
     title="$3"
+    start_code="$4"
+    fname="$5"
+    end_code="$6"
     if (( filesize > max_file_size )); then
         filesize_pretty="$(numfmt --to=iec-i --suffix=B "${filesize}")"
         max_file_size_pretty="$(numfmt --to=iec-i --suffix=B "${max_file_size}")"
         case "${head_tail}" in
             head)
-                contents="$(head -c ${max_file_size} "$5")"
+                contents="$(head -c ${max_file_size} "${fname}")"
                 truncated=""
                 ;;
             tail)
-                contents="$(tail -c ${max_file_size} "$5")"
+                contents="$(tail -c ${max_file_size} "${fname}")"
                 truncated="last "
                 ;;
             *)
-                contents="Invalid head_tail='${head_tail}'$(echo; head -c ${max_file_size} "$5")"
+                contents="Invalid head_tail='${head_tail}'$(echo; head -c ${max_file_size} "${fname}")"
                 truncated=""
                 ;;
         esac
-        title="${title} (truncated to ${truncated}${max_file_size_pretty}; full ${filesize_pretty} file on <a href=\"${GITHUB_WORKFLOW_URL}\">GitHub Actions Artifacts</a> under <code>$(realpath --relative-to "$DIR" "$4")</code>)"
+        title="${title} (truncated to ${truncated}${max_file_size_pretty}; full ${filesize_pretty} file on <a href=\"${GITHUB_WORKFLOW_URL}\">GitHub Actions Artifacts</a> under <code>$(realpath --relative-to "$DIR" "${fname}")</code>)"
     else
-        contents="$(cat "$5")"
+        contents="$(cat "${fname}")"
     fi
     echo -n "${nl}${nl}<details><summary>${title}</summary>${nl}${nl}"
-    echo -n "$4" # start code
+    echo -n "${start_code}"
     echo -n "${contents}"
-    echo -n "$6" # end code
+    echo -n "${end_code}"
     echo -n "${nl}</details>"
 }
 
