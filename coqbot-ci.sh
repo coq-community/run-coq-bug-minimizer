@@ -13,6 +13,7 @@ eval $(opam env)
 mkdir -p "${CI_BASE_BUILD_DIR}"
 pushd "${CI_BASE_BUILD_DIR}"
 git clone https://github.com/coq/coq.git || true
+printf '\n\tfetch = +refs/pull/*/head:refs/remotes/origin/pr/*\n' >> coq/.git/config
 (cd coq; git remote update)
 cp -a coq coq-failing
 cp -a coq coq-passing
