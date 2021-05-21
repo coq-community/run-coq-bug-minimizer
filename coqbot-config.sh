@@ -25,6 +25,7 @@ export COQ_FAILING_SHA="$(echo $(cat "$DIR/coqbot.failing-sha"))"
 export COQ_PASSING_SHA="$(echo $(cat "$DIR/coqbot.passing-sha"))"
 export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
 export CI_BASE_BUILD_DIR="$DIR/builds/coq"
+export COQ_CI_BASE_BUILD_DIR="/builds/coq/coq"
 export GITHUB_MAX_CHAR_COUNT="65536"
 
 if [[ "${CI_TARGET}" == "TAKE FROM"* ]]; then
