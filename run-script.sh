@@ -9,6 +9,8 @@ source "$DIR/coqbot-config.sh"
 
 set -x
 
+su -c 'apt-get install -y sudo'
+
 sudo chmod a+rw .
 
 git clone https://github.com/JasonGross/coq-tools.git
