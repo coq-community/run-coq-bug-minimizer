@@ -9,8 +9,10 @@ source "$DIR/coqbot-config.sh"
 
 set -x
 
-su -c 'apt-get update -y'
-su -c 'apt-get install -y sudo'
+if ! command -v sudo &> /dev/null; then
+    su -c 'apt-get update -y'
+    su -c 'apt-get install -y sudo'
+fi
 
 sudo chmod a+rw .
 
