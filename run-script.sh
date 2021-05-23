@@ -10,8 +10,10 @@ source "$DIR/coqbot-config.sh"
 set -x
 
 if ! command -v sudo &> /dev/null; then
+    echo '::group::install sudo'
     su -c 'apt-get update -y'
     su -c 'apt-get install -y sudo'
+    echo '::endgroup::'
 fi
 
 sudo chmod a+rw .
@@ -27,11 +29,13 @@ if [ ! -f "$DIR/build.log.orig" ]; then
     if [ "${RUN_KIND}" == "coqbot-ci" ]; then
         source "$DIR/coqbot-ci.sh" 2>&1 | tee "$DIR/build.log"
     else
+        echo '::group::wrap binaries'
         for i in coqc coqtop; do
             pushd "$(dirname "$(which "$i")")"
             wrap_file "$i"
             popd
         done
+        echo '::endgroup::'
 
         source "$DIR/coqbot.sh" 2>&1 | tee "$DIR/build.log" || true
     fi
@@ -118,6 +122,8 @@ function coqpath_to_args() {
     done
 }
 
+echo '::group::process logs'
+
 set +o pipefail
 
 FILE="$(tac "$DIR/build.log" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g')"
@@ -183,6 +189,8 @@ args+=(-l - "$DIR/bug.log")
 if [ -f "$DIR/extra-args.sh" ]; then
     source "$DIR/extra-args.sh"
 fi
+
+echo '::endgroup::'
 
 pwd
 "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" "${extra_args[@]}" || exit $?

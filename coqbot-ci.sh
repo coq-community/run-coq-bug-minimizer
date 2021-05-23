@@ -9,8 +9,10 @@ sudo apt-get update -y
 sudo apt-get install -y curl
 echo '::endgroup::'
 
+echo "::group::opam switch '$COMPILER'"
 opam switch "$COMPILER"
 eval $(opam env)
+echo '::endgroup::'
 
 mkdir -p "${CI_BASE_BUILD_DIR}"
 pushd "${CI_BASE_BUILD_DIR}"

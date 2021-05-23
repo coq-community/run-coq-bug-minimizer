@@ -7,6 +7,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$DIR/coqbot-config.sh"
 
 function cleanup() {
+    echo '::group::cleanup'
     cp "${BUG_FILE}" "${FINAL_BUG_FILE}" || RC=$?
     STAMP="$(cat "$DIR/coqbot-request-stamp")"
     touch "$DIR/filename"
@@ -22,6 +23,7 @@ function cleanup() {
         touch "${BUILD_LOG}" "${BUG_LOG}"
         bash "$DIR/reply-coqbot-error.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${BUILD_LOG}" "${BUG_LOG}"
     fi
+    echo '::endgroup::'
     exit $RC
 }
 
