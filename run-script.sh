@@ -148,6 +148,8 @@ PASSING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2 | sed "s,\($
 
 set +o pipefail
 
+echo -n "${FILE}" > "$DIR/filename"
+
 mkdir -p "$(dirname "${BUG_FILE}")"
 mkdir -p "$(dirname "${TMP_FILE}")"
 

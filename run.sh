@@ -9,6 +9,8 @@ source "$DIR/coqbot-config.sh"
 function cleanup() {
     cp "${BUG_FILE}" "${FINAL_BUG_FILE}" || RC=$?
     STAMP="$(cat "$DIR/coqbot-request-stamp")"
+    touch "$DIR/filename"
+    FILE="$(cat "$DIR/filename")"
     EXTRA_DESCRIPTION=""
     if [ ! -z "${CI_TARGET}" ]; then
         EXTRA_DESCRIPTION=" (from ${CI_TARGET})"
