@@ -193,4 +193,6 @@ fi
 echo '::endgroup::'
 
 pwd
+# remove the .glob file to force the bug finder to remake it with passing coqc
+rm -f "${FILE/.v/.glob}" "${FILE/.v/.vo}"
 "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" "${extra_args[@]}" || exit $?
