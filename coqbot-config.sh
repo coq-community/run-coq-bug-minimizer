@@ -43,9 +43,10 @@ function wrap_file() {
     local file="$1"
     # coqdep output needs to be pristine for use in coq_makefile;
     # coq_makefile errors if -o is given a non-relative path / a path
-    # to something not in the current directory, so we just exclude
-    # these two files
-    if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]]; then
+    # to something not in the current directory; coqchk uses -o for
+    # something other than file output, so we just exclude these three
+    # files
+    if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]]; then
         if [ ! -f "$file.orig" ]; then
             mv "$file" "$file.orig" || exit $?
             cat > "$file" <<EOF
