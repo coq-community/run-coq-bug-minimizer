@@ -25,7 +25,7 @@ cp -a coq coq-failing
 cp -a coq coq-passing
 echo '::endgroup::'
 
-echo '::group::download failing artifacts'
+echo "::group::download failing artifacts @ ${COQ_FAILING_SHA} ${FAILING_ARTIFACT_URLS}"
 pushd coq-failing
 git checkout ${COQ_FAILING_SHA}
 for i in ${FAILING_ARTIFACT_URLS}; do
@@ -35,7 +35,7 @@ done
 popd
 echo '::endgroup::'
 
-echo '::group::download passing artifacts'
+echo "::group::download passing artifacts @ ${COQ_PASSING_SHA} ${PASSING_ARTIFACT_URLS}"
 pushd coq-passing
 git checkout ${COQ_PASSING_SHA}
 for i in ${PASSING_ARTIFACT_URLS}; do
