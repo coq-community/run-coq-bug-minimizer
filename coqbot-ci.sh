@@ -29,8 +29,9 @@ echo "::group::download failing artifacts @ ${COQ_FAILING_SHA} ${FAILING_ARTIFAC
 pushd coq-failing
 git checkout ${COQ_FAILING_SHA}
 for i in ${FAILING_ARTIFACT_URLS}; do
-    wget $i -O artifact.zip
-    unzip -o artifact.zip
+    hash="$(echo "$i" | sha1sum | cut -d" " -f1)"
+    wget $i -O "artifact-$hash.zip"
+    unzip -o "artifact-$hash.zip"
 done
 popd
 echo '::endgroup::'
@@ -39,8 +40,9 @@ echo "::group::download passing artifacts @ ${COQ_PASSING_SHA} ${PASSING_ARTIFAC
 pushd coq-passing
 git checkout ${COQ_PASSING_SHA}
 for i in ${PASSING_ARTIFACT_URLS}; do
-    wget $i -O artifact.zip
-    unzip -o artifact.zip
+    hash="$(echo "$i" | sha1sum | cut -d" " -f1)"
+    wget $i -O "artifact-$hash.zip"
+    unzip -o "artifact-$hash.zip"
 done
 popd
 echo '::endgroup::'
