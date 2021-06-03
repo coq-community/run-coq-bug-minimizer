@@ -114,9 +114,10 @@ function print_file() {
     filesize="$(stat -c%s "$5")"
     max_file_size="$2"
     title="$3"
-    start_code="$4"
-    fname="$5"
-    end_code="$6"
+    extra_title_unless_truncated="$4"
+    start_code="$5"
+    fname="$6"
+    end_code="$7"
     if (( filesize > max_file_size )); then
         filesize_pretty="$(numfmt --to=iec-i --suffix=B "${filesize}")"
         max_file_size_pretty="$(numfmt --to=iec-i --suffix=B "${max_file_size}")"
@@ -136,6 +137,7 @@ function print_file() {
         esac
         title="${title} (truncated to ${truncated}${max_file_size_pretty}; full ${filesize_pretty} file on <a href=\"${GITHUB_WORKFLOW_URL}\">GitHub Actions Artifacts</a> under <code>$(realpath --relative-to "$DIR" "${fname}")</code>)"
     else
+        title="${title}${extra_title_unless_truncated}"
         contents="$(cat "${fname}")"
     fi
     echo -n "${nl}${nl}<details><summary>${title}</summary>${nl}${nl}"
