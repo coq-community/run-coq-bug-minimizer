@@ -20,7 +20,7 @@ echo '::group::clone coq'
 git clone https://github.com/coq/coq.git || true
 sed 's,^\(\s*\)\(fetch =.*\)$,\1\2\n\1fetch = +refs/pull/*/head:refs/remotes/origin/pr/*,g' -i coq/.git/config
 cat coq/.git/config
-(cd coq; git remote update)
+(cd coq; git remote update >/dev/null)
 cp -a coq coq-failing
 cp -a coq coq-passing
 echo '::endgroup::'
