@@ -27,7 +27,7 @@ fi
 # Kludge for quicker running locally
 if [ ! -f "$DIR/build.log.orig" ]; then
     if [ "${RUN_KIND}" == "coqbot-ci" ]; then
-        source "$DIR/coqbot-ci.sh" 2>&1 | tee "$DIR/build.log"
+        source "$DIR/coqbot-ci.sh" 2>&1 | tee "${BUILD_LOG}"
     else
         echo '::group::wrap binaries'
         for i in coqc coqtop; do
@@ -37,10 +37,10 @@ if [ ! -f "$DIR/build.log.orig" ]; then
         done
         echo '::endgroup::'
 
-        source "$DIR/coqbot.sh" 2>&1 | tee "$DIR/build.log" || true
+        source "$DIR/coqbot.sh" 2>&1 | tee "${BUILD_LOG}" || true
     fi
 else
-    cp -f "$DIR/build.log.orig" "$DIR/build.log"
+    cp -f "$DIR/build.log.orig" "${BUILD_LOG}"
 fi
 
 set -x
@@ -126,8 +126,8 @@ echo '::group::process logs'
 
 set +o pipefail
 
-FILE="$(tac "$DIR/build.log" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g')"
-EXEC_AND_PATH="$(tac "$DIR/build.log" | grep -A 1 -F "$FILE" | grep --max-count=1 -A 1 'MINIMIZER_DEBUG: exec')"
+FILE="$(tac "${BUILD_LOG}" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g')"
+EXEC_AND_PATH="$(tac "${BUILD_LOG}" | grep -A 1 -F "$FILE" | grep --max-count=1 -A 1 'MINIMIZER_DEBUG: exec')"
 EXEC="$(echo "${EXEC_AND_PATH}" | grep 'MINIMIZER_DEBUG: exec' | grep -o 'exec:\? .*' | sed 's/^exec:\? //g')"
 COQPATH="$(echo "${EXEC_AND_PATH}" | grep -v 'MINIMIZER_DEBUG: exec' | grep -o 'COQPATH=.*' | sed 's/^COQPATH=//g')"
 
@@ -171,7 +171,7 @@ for VAR in FAILING_COQC FAILING_COQTOP FAILING_COQ_MAKEFILE PASSING_COQC; do
 done
 
 mkdir -p "${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/"
-args=("-y" "$FILE" "${BUG_FILE}" "${TMP_FILE}" --error-log="$DIR/build.log" --no-deps --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top)
+args=("-y" "$FILE" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}" --no-deps --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top)
 while IFS= read -r line; do
     args+=("$line")
 done <<< "${FAILING_ARGS}"
