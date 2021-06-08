@@ -96,8 +96,11 @@ function process_args() {
                     prev_load="${prefixed_arg}=$i"
                     next_is_known=yes
                     ;;
-                -batch)
+                -batch|-time)
                     # we already transform coqtop to coqc as necessary, so we can safely ignore -batch
+                    #
+                    # we don't need to pass in -time, as it's purely informative and makes logs longer
+                    #
                     ;;
                 *)
                     echo "${prefixed_arg}=$i"
