@@ -174,7 +174,14 @@ for VAR in FAILING_COQC FAILING_COQTOP FAILING_COQ_MAKEFILE PASSING_COQC; do
 done
 
 mkdir -p "${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/"
-args=("-y" "$FILE" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}" --no-deps --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top)
+args=("-y")
+if [ -f "${FINAL_BUG_FILE}" ]; then # resume minimization from the final bug file
+    echo "Resuming minimization from ${FINAL_BUG_FILE}..."
+    args+=("${FINAL_BUG_FILE}")
+else
+    args+=("${FILE}")
+fi
+args+=("${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}" --no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top)
 while IFS= read -r line; do
     args+=("$line")
 done <<< "${FAILING_ARGS}"
