@@ -205,4 +205,14 @@ echo '::endgroup::'
 pwd
 # remove the .glob file to force the bug finder to remake it with passing coqc
 rm -f "${FILE/.v/.glob}" "${FILE/.v/.vo}"
-"$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" "${extra_args[@]}" || exit $?
+# we want to have ${TIMEDOUT_STAMP_FILE} exist iff we were killed by
+# timeout, so we create it when we're invoked with a timeout, and then
+# remove it on both successful and unsuccessful completion of the bug
+# finder script
+if [ ! -z "$TIMEOUT" ]; then
+    touch "${TIMEDOUT_STAMP_FILE}"
+fi
+RV=0
+"$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" "${extra_args[@]}" || RV=$?
+rm -f "${TIMEDOUT_STAMP_FILE}"
+exit $RV

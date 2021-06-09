@@ -17,12 +17,16 @@ export FINAL_BUG_FILE="$DIR/bug.v" # must not change, since the deploy/artifact 
 export BUILD_LOG="$DIR/build.log" # must not change, since the deploy/artifact script looks for it
 export BUG_LOG="$DIR/bug.log" # must not change, since the deploy/artifact script looks for it
 
+export TIMEDOUT_STAMP_FILE="$DIR/timedout"
+
 export COQBOT_URL="$(cat "$DIR/coqbot.url")"
+export COQBOT_RESUME_MINIMIZATION_URL="$(cat "$DIR/coqbot.resume-minimization-url")"
 export COMPILER="$(cat "$DIR/coqbot.compiler")"
 export FAILING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.failing-artifact-urls"))"
 export PASSING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.passing-artifact-urls"))"
 export COQ_FAILING_SHA="$(echo $(cat "$DIR/coqbot.failing-sha"))"
 export COQ_PASSING_SHA="$(echo $(cat "$DIR/coqbot.passing-sha"))"
+export DOCKER_IMAGE="$(cat "$DIR/coqbot.docker-image")" # Only used for communicating with coqbot on minimization resumption
 export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
 export CI_BASE_BUILD_DIR="$DIR/builds/coq"
 export COQ_CI_BASE_BUILD_DIR="/builds/coq/coq"
