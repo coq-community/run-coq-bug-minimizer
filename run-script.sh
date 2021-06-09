@@ -186,7 +186,8 @@ mkdir -p "${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/"
 args=("-y")
 if [ -f "${FINAL_BUG_FILE}" ]; then # resume minimization from the final bug file
     echo "Resuming minimization from ${FINAL_BUG_FILE}..."
-    args+=("${FINAL_BUG_FILE}")
+    cp -f "${FINAL_BUG_FILE}" "${BUG_FILE}" # attempt to kludge around https://github.com/JasonGross/coq-tools/issues/42 by placing the bug file in a directory that is not a direct ancestor of the library
+    args+=("${BUG_FILE}")
 else
     args+=("${FILE}")
 fi
