@@ -111,13 +111,13 @@ export -f wrap_file
 # print_file max_len title start_code filepath end_code
 function print_file() {
     head_tail="$1"
-    filesize="$(stat -c%s "$5")"
     max_file_size="$2"
     title="$3"
     extra_title_unless_truncated="$4"
     start_code="$5"
     fname="$6"
     end_code="$7"
+    filesize="$(stat -c%s "${fname}")"
     if (( filesize > max_file_size )); then
         filesize_pretty="$(numfmt --to=iec-i --suffix=B "${filesize}")"
         max_file_size_pretty="$(numfmt --to=iec-i --suffix=B "${max_file_size}")"
