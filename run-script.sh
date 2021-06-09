@@ -57,22 +57,8 @@ function process_args() {
     next_next_is_known=no
     prev_load=""
     found_known_v_file=no
-    cur_arg=""
     while read i; do
-        cur_arg="${cur_arg}${i}"
-        if [[ "${cur_arg}" == *'\' ]]; then
-            # this argument escapes the space which turned into a
-            # newline, so we need to collect the argument
-            #
-            # we remove the last character (which is known to be a
-            # '\', but which we don't check here because I'm not sure
-            # how escaping works in the bash matching syntax), and
-            # then add a space.  This is because we don't need to
-            # escape spaces in the output.
-            cur_arg="${cur_arg%?} "
-            continue
-        fi
-        if [[ "${cur_arg}" == *".v" ]] && [ "$(readlink -f "${known_v_file}")" == "$(readlink -f "${cur_arg}")" ]; then
+        if [[ "$i" == *".v" ]] && [ "$(readlink -f "${known_v_file}")" == "$(readlink -f "$i")" ]; then
             found_known_v_file=yes
         fi
         if [ ! -z "${prev_load}" ]; then
@@ -80,19 +66,19 @@ function process_args() {
                 : # we want to skip over loading the file which is buggy, and any loads which come after it, but we want to load files that come before it
             else
                 echo "${prev_load}"
-                echo "${prefixed_arg}=${cur_arg}"
+                echo "${prefixed_arg}=$i"
             fi
             prev_load=""
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
         elif [ "${next_is_known}" == "yes" ]; then
-            echo "${cur_arg}"
+            echo "$i"
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
-        elif [[ "${cur_arg}" == *".v" ]]; then
+        elif [[ "$i" == *".v" ]]; then
             :
         else
-            case "${cur_arg}" in
+            case "$i" in
                 -R|-Q)
                     echo "${passing_prefix}${i}"
                     next_is_known=yes
@@ -107,7 +93,7 @@ function process_args() {
                     next_is_known=yes
                     ;;
                 -l|-lv|-load-vernac-source|-load-vernac-source-verbose)
-                    prev_load="${prefixed_arg}=${cur_arg}"
+                    prev_load="${prefixed_arg}=$i"
                     next_is_known=yes
                     ;;
                 -batch|-time)
@@ -117,7 +103,7 @@ function process_args() {
                     #
                     ;;
                 *)
-                    echo "${prefixed_arg}=${cur_arg}"
+                    echo "${prefixed_arg}=$i"
                     ;;
             esac
         fi
@@ -149,9 +135,17 @@ EXEC_AND_PATH="$(tac "${BUILD_LOG}" | grep -A 1 -F "$FILE" | grep --max-count=1 
 EXEC="$(echo "${EXEC_AND_PATH}" | grep 'MINIMIZER_DEBUG: exec' | grep -o 'exec:\? .*' | sed 's/^exec:\? //g')"
 COQPATH="$(echo "${EXEC_AND_PATH}" | grep -v 'MINIMIZER_DEBUG: exec' | grep -o 'COQPATH=.*' | sed 's/^COQPATH=//g')"
 
+function split_args_to_lines() {
+    for arg in "$@"; do
+        echo "$arg"
+    done
+}
+export -f split_args_to_lines
+
 FAILING_COQPATH="$COQPATH"
 # some people (like Iris) like to use `coqtop -batch -lv` or similar to process a .v file, so we replace coqtop with coqc
-FAILING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed 's,bin/coqtop,bin/coqc,g')"
+# Use bash -c to unescape the bash escapes in EXEC
+FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g')"
 
 FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 FAILING_COQ_MAKEFILE="$(cd "$(dirname "${FAILING_COQC}")" && readlink -f coq_makefile)"
@@ -167,8 +161,8 @@ else
     NONPASSING_PREFIX=""
 fi
 
-FAILING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2; coqpath_to_args "${FAILING_COQPATH}") | process_args "${NONPASSING_PREFIX}" "${FILE}")"
-PASSING_ARGS="$( (bash -c "echo ${EXEC} | tr ' ' '\n'" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_COQPATH}") | process_args passing "${FILE}")"
+FAILING_ARGS="$( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2; coqpath_to_args "${FAILING_COQPATH}") | process_args "${NONPASSING_PREFIX}" "${FILE}")"
+PASSING_ARGS="$( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_COQPATH}") | process_args passing "${FILE}")"
 
 set +o pipefail
 
