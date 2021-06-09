@@ -57,8 +57,22 @@ function process_args() {
     next_next_is_known=no
     prev_load=""
     found_known_v_file=no
+    cur_arg=""
     while read i; do
-        if [[ "$i" == *".v" ]] && [ "$(readlink -f "${known_v_file}")" == "$(readlink -f "$i")" ]; then
+        cur_arg="${cur_arg}${i}"
+        if [[ "${cur_arg}" == *'\' ]]; then
+            # this argument escapes the space which turned into a
+            # newline, so we need to collect the argument
+            #
+            # we remove the last character (which is known to be a
+            # '\', but which we don't check here because I'm not sure
+            # how escaping works in the bash matching syntax), and
+            # then add a space.  This is because we don't need to
+            # escape spaces in the output.
+            cur_arg="${cur_arg%?} "
+            continue
+        fi
+        if [[ "${cur_arg}" == *".v" ]] && [ "$(readlink -f "${known_v_file}")" == "$(readlink -f "${cur_arg}")" ]; then
             found_known_v_file=yes
         fi
         if [ ! -z "${prev_load}" ]; then
@@ -66,19 +80,19 @@ function process_args() {
                 : # we want to skip over loading the file which is buggy, and any loads which come after it, but we want to load files that come before it
             else
                 echo "${prev_load}"
-                echo "${prefixed_arg}=$i"
+                echo "${prefixed_arg}=${cur_arg}"
             fi
             prev_load=""
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
         elif [ "${next_is_known}" == "yes" ]; then
-            echo "$i"
+            echo "${cur_arg}"
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
-        elif [[ "$i" == *".v" ]]; then
+        elif [[ "${cur_arg}" == *".v" ]]; then
             :
         else
-            case "$i" in
+            case "${cur_arg}" in
                 -R|-Q)
                     echo "${passing_prefix}${i}"
                     next_is_known=yes
@@ -93,7 +107,7 @@ function process_args() {
                     next_is_known=yes
                     ;;
                 -l|-lv|-load-vernac-source|-load-vernac-source-verbose)
-                    prev_load="${prefixed_arg}=$i"
+                    prev_load="${prefixed_arg}=${cur_arg}"
                     next_is_known=yes
                     ;;
                 -batch|-time)
@@ -103,10 +117,11 @@ function process_args() {
                     #
                     ;;
                 *)
-                    echo "${prefixed_arg}=$i"
+                    echo "${prefixed_arg}=${cur_arg}"
                     ;;
             esac
         fi
+        cur_arg=""
     done
 }
 
