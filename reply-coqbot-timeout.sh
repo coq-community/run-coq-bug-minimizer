@@ -15,14 +15,7 @@ commit_message="$(echo -n "$(git log -1 --pretty=%B)" | tr '\n' '\t')"
 file="$(mktemp)"
 cat > "$file" <<EOF
 ${id}
-${commit_message}
-${DOCKER_IMAGE}
-${CI_TARGET}
-${COMPILER}
-${FAILING_ARTIFACT_URLS}
-${PASSING_ARTIFACT_URLS}
-${COQ_FAILING_SHA}
-${COQ_PASSING_SHA}
+${RESUMPTION_ARGS}
 ${bug_file_contents}
 EOF
 
