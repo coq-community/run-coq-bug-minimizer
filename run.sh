@@ -19,7 +19,11 @@ function cleanup() {
         EXTRA_DESCRIPTION=" (from ${CI_TARGET})"
     fi
     if [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
-        EXTRA_DESCRIPTION="${EXTRA_DESCRIPTION} (interrupted by timeout)"
+        EXTRA_DESCRIPTION="${EXTRA_DESCRIPTION} (interrupted by timeout"
+        if [ ! -z "${COQBOT_RESUME_MINIMIZATION_URL}" ]; then
+            EXTRA_DESCRIPTION="${EXTRA_DESCRIPTION}, being automatically continued"
+        fi
+        EXTRA_DESCRIPTION="${EXTRA_DESCRIPTION})"
     fi
     if [ -f "${FINAL_BUG_FILE}" ]; then
         touch "${TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}"
