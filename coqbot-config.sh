@@ -12,8 +12,9 @@ export end_code="${nl}"'```'
 
 export BUG_TMP_DIR="$DIR/cwd"
 export BUG_FILE="${BUG_TMP_DIR}/bug_01.v"
-export TMP_FILE="${BUG_TMP_DIR}/tmp.v" # must not change, since the deploy/artifact script looks for it
+export TMP_FILE="${BUG_TMP_DIR}/tmp.v"
 export FINAL_BUG_FILE="$DIR/bug.v" # must not change, since the deploy/artifact script looks for it
+export FINAL_TMP_FILE="$DIR/tmp.v" # must not change, since the deploy/artifact script looks for it
 export BUILD_LOG="$DIR/build.log" # must not change, since the deploy/artifact script looks for it
 export BUG_LOG="$DIR/bug.log" # must not change, since the deploy/artifact script looks for it
 

@@ -11,6 +11,7 @@ rm -f "${TIMEDOUT_STAMP_FILE}"
 function cleanup() {
     echo '::group::cleanup'
     cp -f "${BUG_FILE}" "${FINAL_BUG_FILE}" || RC=$?
+    cp -f "${TMP_FILE}" "${FINAL_TMP_FILE}" || touch "${FINAL_TMP_FILE}"
     STAMP="$(cat "$DIR/coqbot-request-stamp")"
     touch "$DIR/filename"
     FILE="$(cat "$DIR/filename")"
@@ -26,11 +27,11 @@ function cleanup() {
         EXTRA_DESCRIPTION="${EXTRA_DESCRIPTION})"
     fi
     if [ -f "${FINAL_BUG_FILE}" ]; then
-        touch "${TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}"
+        touch "${BUILD_LOG}" "${BUG_LOG}"
         if [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
-            bash "$DIR/reply-coqbot-timeout.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}"
+            bash "$DIR/reply-coqbot-timeout.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${FINAL_TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}"
         else
-            bash "$DIR/reply-coqbot.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}"
+            bash "$DIR/reply-coqbot.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${FINAL_TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}"
         fi
     else
         touch "${BUILD_LOG}" "${BUG_LOG}"
