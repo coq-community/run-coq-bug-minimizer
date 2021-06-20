@@ -43,6 +43,9 @@ function cleanup() {
 
 trap cleanup SIGINT SIGKILL EXIT
 
+echo "::remove-matcher owner=coq-problem-matcher::"
+echo "::add-matcher::$DIR/coq.json"
+
 set -x
 
 if [ -z "$TIMEOUT" ]; then
