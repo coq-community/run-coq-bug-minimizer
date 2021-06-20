@@ -186,12 +186,13 @@ mkdir -p "${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/"
 args=("-y")
 if [ -f "${FINAL_BUG_FILE}" ]; then # resume minimization from the final bug file
     echo "Resuming minimization from ${FINAL_BUG_FILE}..."
+    echo "Skipping checking of log file..."
     cp -f "${FINAL_BUG_FILE}" "${BUG_FILE}" # attempt to kludge around https://github.com/JasonGross/coq-tools/issues/42 by placing the bug file in a directory that is not a direct ancestor of the library
-    args+=("${BUG_FILE}")
+    args+=("${BUG_FILE}" "${BUG_FILE}" "${TMP_FILE}")
 else
-    args+=("${FILE}")
+    args+=(    "${FILE}" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}")
 fi
-args+=("${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}" --no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top)
+args+=(--no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top)
 while IFS= read -r line; do
     args+=("$line")
 done <<< "${FAILING_ARGS}"
