@@ -10,6 +10,7 @@ sudo apt-get install -y curl
 echo '::endgroup::'
 
 echo "::group::opam switch '$COMPILER'"
+echo "::warning::Using opam switch '$COMPILER'"
 opam switch "$COMPILER"
 eval $(opam env)
 echo '::endgroup::'
@@ -26,6 +27,7 @@ cp -a coq coq-passing
 echo '::endgroup::'
 
 echo "::group::download failing artifacts @ ${COQ_FAILING_SHA} ${FAILING_ARTIFACT_URLS}"
+echo "::warning::download failing artifacts @ ${COQ_FAILING_SHA} ${FAILING_ARTIFACT_URLS}"
 pushd coq-failing
 git checkout ${COQ_FAILING_SHA}
 for i in ${FAILING_ARTIFACT_URLS}; do
@@ -37,6 +39,7 @@ popd
 echo '::endgroup::'
 
 echo "::group::download passing artifacts @ ${COQ_PASSING_SHA} ${PASSING_ARTIFACT_URLS}"
+echo "::warning::download passing artifacts @ ${COQ_PASSING_SHA} ${PASSING_ARTIFACT_URLS}"
 pushd coq-passing
 git checkout ${COQ_PASSING_SHA}
 for i in ${PASSING_ARTIFACT_URLS}; do
