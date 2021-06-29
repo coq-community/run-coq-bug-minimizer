@@ -55,6 +55,7 @@ function process_args() {
     known_v_file="$2"
     next_is_known=no
     next_next_is_known=no
+    skip_next=no
     prev_load=""
     found_known_v_file=no
     while read i; do
@@ -69,6 +70,9 @@ function process_args() {
                 echo "${prefixed_arg}=$i"
             fi
             prev_load=""
+            next_is_known="${next_next_is_known}"
+            next_next_is_known=no
+        elif [ "${skip_next}" == "yes" ]; then
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
         elif [ "${next_is_known}" == "yes" ]; then
@@ -101,6 +105,11 @@ function process_args() {
                     #
                     # we don't need to pass in -time, as it's purely informative and makes logs longer
                     #
+                    ;;
+                -o)
+                    # We don't pass along -o arguments, because we're
+                    # not outputting to the same .vo files
+                    skip_next=yes
                     ;;
                 *)
                     echo "${prefixed_arg}=$i"
