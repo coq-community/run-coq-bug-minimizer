@@ -66,18 +66,19 @@ sudo mkdir -p "${COQ_CI_BASE_BUILD_DIR}"
 sudo rm -rf "${COQ_CI_BASE_BUILD_DIR}"
 
 echo "::group::make ${CI_TARGET} (passing)"
-pushd "${CI_BASE_BUILD_DIR}"/coq-passing
-sudo ln -s "$(pwd)" "${COQ_CI_BASE_BUILD_DIR}"
+mv "${CI_BASE_BUILD_DIR}"/coq-passing "${COQ_CI_BASE_BUILD_DIR}"
+pushd "${COQ_CI_BASE_BUILD_DIR}"
 make -f Makefile.ci GITLAB_CI=1 ${CI_TARGET}
 popd
+mv "${COQ_CI_BASE_BUILD_DIR}" "${CI_BASE_BUILD_DIR}"/coq-passing
 echo '::endgroup::'
 
 echo "::group::make ${CI_TARGET} (failing)"
-pushd "${CI_BASE_BUILD_DIR}"/coq-failing
-sudo rm "${COQ_CI_BASE_BUILD_DIR}"
-sudo ln -s "$(pwd)" "${COQ_CI_BASE_BUILD_DIR}"
+mv "${CI_BASE_BUILD_DIR}"/coq-failing "${COQ_CI_BASE_BUILD_DIR}"
+pushd "${COQ_CI_BASE_BUILD_DIR}"
 make -f Makefile.ci GITLAB_CI=1 ${CI_TARGET} 2>&1 || true
 popd
+mv "${COQ_CI_BASE_BUILD_DIR}" "${CI_BASE_BUILD_DIR}"/coq-failing
 echo '::endgroup::'
 
 set -x
