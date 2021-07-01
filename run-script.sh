@@ -125,13 +125,13 @@ function coqpath_to_args() {
     for i in $1; do
         echo "-I"
         echo "$i"
-        for subdir in $(ls "$i"); do
+        while IFS= read -r subdir; do
             if [ -d "$i/$subdir" ]; then
                 echo "-Q"
                 echo "$i/$subdir"
                 echo "$subdir"
             fi
-        done
+        done < <(ls "$i")
     done
 }
 
