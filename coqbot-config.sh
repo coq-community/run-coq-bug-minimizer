@@ -17,6 +17,7 @@ export FINAL_BUG_FILE="$DIR/bug.v" # must not change, since the deploy/artifact 
 export FINAL_TMP_FILE="$DIR/tmp.v" # must not change, since the deploy/artifact script looks for it
 export BUILD_LOG="$DIR/build.log" # must not change, since the deploy/artifact script looks for it
 export BUG_LOG="$DIR/bug.log" # must not change, since the deploy/artifact script looks for it
+export FINAL_TMP_FOLDER="$DIR/tmp" # must not change, since the deploy/artifact script looks for it
 
 export TIMEDOUT_STAMP_FILE="$DIR/timedout"
 
