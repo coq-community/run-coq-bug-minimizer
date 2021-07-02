@@ -14,6 +14,7 @@ function cleanup() {
     cp -f "${TMP_FILE}" "${FINAL_TMP_FILE}" || touch "${FINAL_TMP_FILE}"
     mkdir -p "${FINAL_TMP_FOLDER}"
     cp -a /tmp "${FINAL_TMP_FOLDER}" || true
+    find "${FINAL_TMP_FOLDER}" | xargs chmod a+rw || true
     STAMP="$(cat "$DIR/coqbot-request-stamp")"
     touch "$DIR/filename"
     FILE="$(cat "$DIR/filename")"
