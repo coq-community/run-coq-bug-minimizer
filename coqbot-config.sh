@@ -58,7 +58,9 @@ function wrap_file() {
             cat > "$file" <<EOF
 #!/usr/bin/env bash
 
-args=("$PWD/$file.orig")
+DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+args=("\$DIR/$file.orig")
 
 next_is_dir=no
 next_is_special=no
