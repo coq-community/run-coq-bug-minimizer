@@ -14,7 +14,7 @@ echo "::warning::Using opam switch '$COMPILER'"
 opam switch "$COMPILER"
 eval $(opam env)
 echo "::warning::which ocamlfind: '$(which ocamlfind)'"
-echo "::warning::ocamlfind ocamlopt: '$(ocamlfind ocamlopt)'"
+echo "::warning::ocamlfind ocamlopt -v: $(ocamlfind ocamlopt -v | xargs printf "%s%%0A")"
 echo '::endgroup::'
 
 mkdir -p "${CI_BASE_BUILD_DIR}"
