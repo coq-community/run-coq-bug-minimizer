@@ -14,7 +14,7 @@ echo "::warning::Using opam switch '$COMPILER'"
 opam switch "$COMPILER"
 eval $(opam env)
 echo "::warning::which ocamlfind: '$(which ocamlfind)'"
-echo "::warning::ocamlfind ocamlopt -v: $(ocamlfind ocamlopt -v | xargs printf "%s%%0A")"
+echo "::warning::ocamlfind ocamlopt -v: $(ocamlfind ocamlopt -v | tr '\n' '\r' | sed 's/\r/%0A/g')"
 echo '::endgroup::'
 
 mkdir -p "${CI_BASE_BUILD_DIR}"
@@ -55,7 +55,7 @@ echo '::endgroup::'
 echo '::group::wrap binaries'
 for dir in "${CI_BASE_BUILD_DIR}"/coq-{failing,passing}/_install_ci/bin; do
     pushd "$dir" >/dev/null
-    echo "::warning::$(pwd)/coqc -config: $(./coqc -config | xargs printf "%s%%0A")"
+    echo "::warning::$(pwd)/coqc -config: $(./coqc -config | tr '\n' '\r' | sed 's/\r/%0A/g')"
     for i in $(ls); do
         wrap_file "$i"
     done
