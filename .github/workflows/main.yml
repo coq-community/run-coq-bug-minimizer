@@ -55,6 +55,15 @@ jobs:
         path: tmp.v
       if: always()
 
+    - name: Upload a Build Artifact for /tmp
+      uses: actions/upload-artifact@v2
+      with:
+        # Artifact name
+        name: tmp-artifact
+        # A file, directory or wildcard pattern that describes what to upload
+        path: tmp/
+      if: always()
+
     - name: Make a single build artifact
       run: |
         rm -rf /tmp/artifact.tar.gz
