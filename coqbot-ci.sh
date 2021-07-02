@@ -76,7 +76,7 @@ echo '::endgroup::'
 echo "::group::make ${CI_TARGET} (failing)"
 mv "${CI_BASE_BUILD_DIR}"/coq-failing "${COQ_CI_BASE_BUILD_DIR}"
 pushd "${COQ_CI_BASE_BUILD_DIR}"
-make -f Makefile.ci GITLAB_CI=1 ${CI_TARGET} 2>&1 || true
+{ make -f Makefile.ci GITLAB_CI=1 ${CI_TARGET} 2>&1 | sed "s|${COQ_CI_BASE_BUILD_DIR}/|${CI_BASE_BUILD_DIR}/coq-failing/|g"; } || true
 popd
 mv "${COQ_CI_BASE_BUILD_DIR}" "${CI_BASE_BUILD_DIR}"/coq-failing
 echo '::endgroup::'
