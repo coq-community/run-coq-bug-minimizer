@@ -222,6 +222,8 @@ fi
 
 echo '::endgroup::'
 
+eval $(opam env)
+
 pwd
 # remove the .glob file to force the bug finder to remake it with passing coqc
 rm -f "${FILE/.v/.glob}" "${FILE/.v/.vo}"
