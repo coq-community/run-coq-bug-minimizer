@@ -58,6 +58,7 @@ jobs:
     - name: Adjust tmp permissions
       run: |
         sudo chown -R $(id -u):$(id -g) tmp/
+      if: always()
 
     - name: Upload a Build Artifact for /tmp
       uses: actions/upload-artifact@v2
