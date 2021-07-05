@@ -100,15 +100,17 @@ function process_args() {
                     prev_load="${prefixed_arg}=$i"
                     next_is_known=yes
                     ;;
-                -batch|-time)
+                -batch|-time|-noglob)
                     # we already transform coqtop to coqc as necessary, so we can safely ignore -batch
                     #
                     # we don't need to pass in -time, as it's purely informative and makes logs longer
                     #
+                    # we must not pass in -noglob, because we rely on generated glob files
                     ;;
-                -o)
-                    # We don't pass along -o arguments, because we're
-                    # not outputting to the same .vo files
+                -o|-dump-glob)
+                    # We don't pass along -o/-dump-glob arguments,
+                    # because we're not outputting to the same
+                    # .vo/.glob files
                     skip_next=yes
                     ;;
                 *)
