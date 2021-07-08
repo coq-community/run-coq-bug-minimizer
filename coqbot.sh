@@ -2,9 +2,6 @@ opam update -y
 opam install -y coq-ext-lib
 eval $(opam env)
 
-sudo apt-get update -y
-sudo apt-get install -y wget
-
 mkdir temp
 cd temp
 wget https://github.com/coq/coq/files/4698509/bug.v.zip

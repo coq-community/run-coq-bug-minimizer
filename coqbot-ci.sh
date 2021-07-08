@@ -4,11 +4,6 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-echo '::group::install dependencies'
-sudo apt-get update -y
-sudo apt-get install -y curl
-echo '::endgroup::'
-
 echo "::group::opam switch '$COMPILER'"
 echo "::warning::Using opam switch '$COMPILER'"
 opam switch "$COMPILER"

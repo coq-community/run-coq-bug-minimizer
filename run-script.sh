@@ -24,6 +24,13 @@ if [ -z "${PYTHON}" ]; then
     PYTHON="$(which python3 || which python)"
 fi
 
+echo '::group::install general dependencies'
+sudo apt-get update -y
+sudo apt-get install -y wget curl
+opam update -y
+eval $(opam env)
+echo '::endgroup::'
+
 # Kludge for quicker running locally
 if [ ! -f "$DIR/build.log.orig" ]; then
     if [ "${RUN_KIND}" == "coqbot-ci" ]; then
