@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2021-07-23-66f5817edb
+ci-fiat_parsers
+4.05.0
+https://gitlab.com/coq/coq/-/jobs/1468518124/artifacts/download https://gitlab.com/coq/coq/-/jobs/1468518178/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/1468342676/artifacts/download https://gitlab.com/coq/coq/-/jobs/1468342727/artifacts/download
+53fb47dc5242dc5e0e85cad4d119b9aa9c4fa0bc
+6bb57d852ccd250aa776b575a8ba7dd027041ce6
