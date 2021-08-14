@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2021-07-23-66f5817edb
+ci-perennial
+4.12.0+flambda
+https://gitlab.com/coq/coq/-/jobs/1500161483/artifacts/download https://gitlab.com/coq/coq/-/jobs/1500161549/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/1499919541/artifacts/download https://gitlab.com/coq/coq/-/jobs/1499919859/artifacts/download
+a041fc10f32e72bdad206ec72591b7cd493698f6
+78ff5949b62047ef99ba613011964ee6c86ab0c8
