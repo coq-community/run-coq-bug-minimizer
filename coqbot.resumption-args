@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2021-07-23-66f5817edb
+ci-vst
+4.12.0+flambda
+https://gitlab.com/coq/coq/-/jobs/1522868660/artifacts/download https://gitlab.com/coq/coq/-/jobs/1522868730/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/1517711209/artifacts/download https://gitlab.com/coq/coq/-/jobs/1517711313/artifacts/download
+59d48392758712ebd48593cd2e964088cfd4022e
+7d853f77fadb875fab6debaea1991913e261868d
