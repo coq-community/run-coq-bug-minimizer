@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2021-07-23-66f5817edb
+ci-rewriter
+4.12.0+flambda
+https://gitlab.com/coq/coq/-/jobs/1549277435/artifacts/download https://gitlab.com/coq/coq/-/jobs/1549277885/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/1545449959/artifacts/download https://gitlab.com/coq/coq/-/jobs/1545450068/artifacts/download
+a4f3b642ca5ce2003137f267a926da2247ad4722
+fa937585d2c1653bca81595e00f99cd184b5fb2f
