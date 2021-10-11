@@ -8,6 +8,9 @@ set -x
 
 id="$1"
 comment_contents="Minimized File $2 (full log [on GitHub Actions](${GITHUB_WORKFLOW_URL}))"
+if [ ! -z "${SURVEY_URL}" ] && [ ! -z "${SURVEY_PR_URL_PARAMETER}" ] && [ ! -z "${ISSUE_NUMBER}" ] && [ ! -z "$DIR/early-feedback.md" ]; then
+    comment_contents+="${nl}${nl}$(cat "$DIR/early-feedback.md" | sed "s>@SURVEY_URL@>${SURVEY_URL}?${SURVEY_PR_URL_PARAMETER}=${ISSUE_NUMBER}>g")"
+fi
 comment_contents+="$(print_file head "$(( ${GITHUB_MAX_CHAR_COUNT} / 2 ))" "Minimized Coq File" " (consider adding this file to the test-suite)" "${start_coq_code}" "$3" "${end_code}")"
 comment_contents+="$(print_file head "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Intermediate Coq File (useful for debugging if minimization did not go as far as you wanted)" "" "${start_coq_code}" "$4" "${end_code}")"
 comment_contents+="$(print_file tail "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Build Log (contains the Coq error message)" "" "${start_code}" "$5" "${end_code}")"
