@@ -19,7 +19,7 @@ ${id}${nl}${comment_contents}
 EOF
 
 if [ ! -z "${COQBOT_URL}" ]; then
-    date
+    date -u
     curl -X POST --data-binary "@${file}" "${COQBOT_URL}"
 else
     echo curl -X POST --data-binary "@${file}"
