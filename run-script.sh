@@ -149,9 +149,10 @@ echo '::group::process logs'
 set +o pipefail
 
 FILE="$(tac "${BUILD_LOG}" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g')"
-EXEC_AND_PATH="$(tac "${BUILD_LOG}" | grep -A 1 -F "$FILE" | grep --max-count=1 -A 1 'MINIMIZER_DEBUG: exec')"
-EXEC="$(echo "${EXEC_AND_PATH}" | grep 'MINIMIZER_DEBUG: exec' | grep -o 'exec:\? .*' | sed 's/^exec:\? //g')"
-COQPATH="$(echo "${EXEC_AND_PATH}" | grep -v 'MINIMIZER_DEBUG: exec' | grep -o 'COQPATH=.*' | sed 's/^COQPATH=//g')"
+EXEC_AND_PATH_AND_PWD="$(tac "${BUILD_LOG}" | grep -A 3 -F "$FILE" | grep --max-count=1 -A 3 'MINIMIZER_DEBUG: exec')"
+EXEC="$(echo "${EXEC_AND_PATH_AND_PWD}" | grep 'MINIMIZER_DEBUG: exec' | grep -o 'exec:\? .*' | sed 's/^exec:\? //g')"
+COQPATH="$(echo "${EXEC_AND_PATH_AND_PWD}" | grep 'MINIMIZER_DEBUG: coqpath' | grep -o 'COQPATH=.*' | sed 's/^COQPATH=//g')"
+EXEC_PWD="$(echo "${EXEC_AND_PATH_AND_PWD}" | grep 'MINIMIZER_DEBUG: pwd' | grep -o 'PWD=.*' | sed 's/^PWD=//g')"
 
 function split_args_to_lines() {
     for arg in "$@"; do
@@ -179,12 +180,13 @@ else
     NONPASSING_PREFIX=""
 fi
 
-FAILING_ARGS="$( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2; coqpath_to_args "${FAILING_COQPATH}") | process_args "${NONPASSING_PREFIX}" "${FILE}")"
-PASSING_ARGS="$( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_COQPATH}") | process_args passing "${FILE}")"
+FAILING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2; coqpath_to_args "${FAILING_COQPATH}") | process_args "${NONPASSING_PREFIX}" "${FILE}") )"
+PASSING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_COQPATH}") | process_args passing "${FILE}") )"
+ABS_FILE="$(cd "${EXEC_PWD}" && readlink -f "${FILE}")"
 
 set +o pipefail
 
-echo -n "${FILE}" > "$DIR/filename"
+echo -n "${ABS_FILE}" > "$DIR/filename"
 
 mkdir -p "$(dirname "${BUG_FILE}")"
 mkdir -p "$(dirname "${TMP_FILE}")"
@@ -208,7 +210,7 @@ if [ -f "${FINAL_BUG_FILE}" ]; then # resume minimization from the final bug fil
     cp -f "${FINAL_BUG_FILE}" "${BUG_FILE}" # attempt to kludge around https://github.com/JasonGross/coq-tools/issues/42 by placing the bug file in a directory that is not a direct ancestor of the library
     args+=("${BUG_FILE}" "${BUG_FILE}" "${TMP_FILE}")
 else
-    args+=(    "${FILE}" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}")
+    args+=(    "${ABS_FILE}" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}")
 fi
 args+=(--no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top)
 while IFS= read -r line; do
