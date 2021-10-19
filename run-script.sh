@@ -148,7 +148,7 @@ echo '::group::process logs'
 
 set +o pipefail
 
-FILE="$(tac "${BUILD_LOG}" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g')"
+FILE="$(tac "${BUILD_LOG}" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g; s,^\./,,g')"
 EXEC_AND_PATH_AND_PWD="$(tac "${BUILD_LOG}" | grep -A 3 -F "$FILE" | grep --max-count=1 -A 3 'MINIMIZER_DEBUG: exec')"
 EXEC="$(echo "${EXEC_AND_PATH_AND_PWD}" | grep 'MINIMIZER_DEBUG: exec' | grep -o 'exec:\? .*' | sed 's/^exec:\? //g')"
 COQPATH="$(echo "${EXEC_AND_PATH_AND_PWD}" | grep 'MINIMIZER_DEBUG: coqpath' | grep -o 'COQPATH=.*' | sed 's/^COQPATH=//g')"
