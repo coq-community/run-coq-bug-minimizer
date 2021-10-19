@@ -79,7 +79,7 @@ for i in "\$@"; do
     next_is_special="\${next_next_is_special}"
     next_next_is_special=no
   elif [[ "\$i" == *".v" ]]; then
-    args+=("\$(readlink -f "\$i")")
+    args+=("\$i") # ("\$(readlink -f "\$i")") # we absolutize this later instead of now, to preserve output tests in HB
   else
     args+=("\$i")
     case "\$i" in
@@ -106,7 +106,9 @@ for i in "\$@"; do
   fi
 done
 
-echo "MINIMIZER_DEBUG: \$0: COQPATH=\$COQPATH" >&2
+echo "MINIMIZER_DEBUG: \$0" >&2
+echo "MINIMIZER_DEBUG: coqpath: COQPATH=\$COQPATH" >&2
+echo "MINIMIZER_DEBUG: pwd: PWD=\$(pwd)" >&2
 echo -n "MINIMIZER_DEBUG: exec: " >&2
 printf "%q " "\${args[@]}" >&2
 echo >&2
