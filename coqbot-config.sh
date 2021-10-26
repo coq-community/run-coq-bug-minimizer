@@ -88,12 +88,12 @@ for i in "\$@"; do
         next_is_special=no
         next_next_is_special=yes
         ;;
-      -I|-include|-top|-topfile|-coqlib|-exlcude-dir|-load-ml-object|-load-ml-source|-load-vernac-source|-l|-load-vernac-source-verbose|-lv|-init-file|-dump-glob|-o)
+      -I|-include|-coqlib|-exlcude-dir|-load-ml-object|-load-ml-source|-load-vernac-source|-l|-load-vernac-source-verbose|-lv|-init-file|-dump-glob|-o)
         next_is_dir=yes
         next_is_special=no
         next_next_is_special=no
         ;;
-      -arg|-compat|-w|-color|-diffs|-mangle-names|-set|-unset|-bytecode-compiler|-native-compiler)
+      -arg|-compat|-w|-color|-diffs|-mangle-names|-set|-unset|-top|-topfile|-bytecode-compiler|-native-compiler)
         next_is_special=yes
         ;;
       -schedule-vio2vo|-schedule-vio-checking)
