@@ -130,14 +130,15 @@ function process_args() {
 }
 
 function coqpath_to_args() {
+    cd "$1"
     local IFS=:
-    for i in $1; do
+    for i in $2; do
         echo "-I"
-        echo "$i"
+        (cd "$i" && pwd)
         while IFS= read -r subdir; do
             if [ -d "$i/$subdir" ]; then
                 echo "-Q"
-                echo "$i/$subdir"
+                (cd "$i/$subdir" && pwd)
                 echo "$subdir"
             fi
         done < <(ls "$i")
@@ -165,12 +166,14 @@ FAILING_COQPATH="$COQPATH"
 # some people (like Iris) like to use `coqtop -batch -lv` or similar to process a .v file, so we replace coqtop with coqc
 # Use bash -c to unescape the bash escapes in EXEC
 FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g')"
+FAILING_EXEC_PWD="${EXEC_PWD}"
 
 FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 FAILING_COQ_MAKEFILE="$(cd "$(dirname "${FAILING_COQC}")" && readlink -f coq_makefile)"
 
 PASSING_COQPATH="$(echo "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g')"
+PASSING_EXEC_PWD="$(echo "${EXEC_PWD}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 
 if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
     # we are running with two versions
@@ -180,8 +183,8 @@ else
     NONPASSING_PREFIX=""
 fi
 
-FAILING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2; coqpath_to_args "${FAILING_COQPATH}") | process_args "${NONPASSING_PREFIX}" "${FILE}") )"
-PASSING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_COQPATH}") | process_args passing "${FILE}") )"
+FAILING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2; coqpath_to_args "${FAILING_EXEC_PWD}" "${FAILING_COQPATH}") | process_args "${NONPASSING_PREFIX}" "${FILE}") )"
+PASSING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_EXEC_PWD}" "${PASSING_COQPATH}") | process_args passing "${FILE}") )"
 ABS_FILE="$(cd "${EXEC_PWD}" && readlink -f "${FILE}")"
 
 set +o pipefail
