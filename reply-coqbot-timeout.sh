@@ -20,6 +20,7 @@ ${bug_file_contents}
 EOF
 
 if [ ! -z "${COQBOT_RESUME_MINIMIZATION_URL}" ]; then
+    date -u
     curl -X POST --data-binary "@${file}" "${COQBOT_RESUME_MINIMIZATION_URL}"
 else
     echo curl -X POST --data-binary "@${file}"
