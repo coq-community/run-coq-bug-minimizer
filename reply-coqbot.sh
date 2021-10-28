@@ -8,7 +8,7 @@ set -x
 
 id="$1"
 comment_contents="Minimized File $2 (full log [on GitHub Actions](${GITHUB_WORKFLOW_URL}))"
-if [ ! -z "${SURVEY_URL}" ] && [ ! -z "${SURVEY_PR_URL_PARAMETER}" ] && [ ! -z "${ISSUE_NUMBER}" ] && [ ! -z "$DIR/early-feedback.md" ]; then
+if [ ! -z "${SURVEY_URL}" ] && [ ! -z "${SURVEY_PR_URL_PARAMETER}" ] && [ ! -z "${ISSUE_NUMBER}" ] && [ ! -z "$DIR/early-feedback.md" ] && [ ! -f "${TIMEDOUT_STAMP_FILE}" ]; then
     comment_contents+="${nl}${nl}$(cat "$DIR/early-feedback.md" | sed "s>@SURVEY_URL@>${SURVEY_URL}?${SURVEY_PR_URL_PARAMETER}=${ISSUE_NUMBER}>g")"
 fi
 comment_contents+="$(print_file head "$(( ${GITHUB_MAX_CHAR_COUNT} / 2 ))" "Minimized Coq File" " (consider adding this file to the test-suite)" "${start_coq_code}" "$3" "${end_code}")"
