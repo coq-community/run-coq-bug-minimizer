@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2021-10-01-7c5b78d50f
+ci-mathcomp
+4.13.0+flambda
+https://gitlab.com/coq/coq/-/jobs/1719308849/artifacts/download https://gitlab.com/coq/coq/-/jobs/1719308903/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/1718558713/artifacts/download https://gitlab.com/coq/coq/-/jobs/1718558838/artifacts/download
+e9c122360362d12a06897d038450544ad3efdc1f
+84f171539ebe97fbfe7cee4066e62181edf68bac
