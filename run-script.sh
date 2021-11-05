@@ -198,9 +198,9 @@ cd "$(dirname "${BUG_FILE}")"
 
 for VAR in FAILING_COQC FAILING_COQTOP FAILING_COQ_MAKEFILE PASSING_COQC; do
     if [ ! -x "${!VAR}" ]; then
-        echo "Error: Could not find ${VAR} ('${!VAR}')" | tee -a "$DIR/bug.log" >&2
-        echo "Files in '$(dirname ${!VAR})':" | tee -a "$DIR/bug.log" >&2
-        find "$(dirname ${!VAR})" | tee -a "$DIR/bug.log" >&2
+        echo "Error: Could not find ${VAR} ('${!VAR}')" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
+        echo "Files in '$(dirname ${!VAR})':" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
+        find "$(dirname ${!VAR})" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
         exit 1
     fi
 done
@@ -227,7 +227,7 @@ if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
         args+=("$line")
     done <<< "${PASSING_ARGS}"
 fi
-args+=(-l - "$DIR/bug.log")
+args+=(-l - "${BUG_LOG}" --verbose-log-file "9999,${VERBOSE_BUG_LOG}")
 
 # allow coqbot.sh to set extra_args
 if [ -f "$DIR/extra-args.sh" ]; then
