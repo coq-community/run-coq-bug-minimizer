@@ -228,11 +228,7 @@ if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
     done <<< "${PASSING_ARGS}"
 fi
 args+=(-l - "${BUG_LOG}" --verbose-log-file "9999,${VERBOSE_BUG_LOG}")
-
-# allow coqbot.sh to set extra_args
-if [ -f "$DIR/extra-args.sh" ]; then
-    source "$DIR/extra-args.sh"
-fi
+args+=("${EXTRA_MINIMIZER_ARGUMENTS[@]}")
 
 echo '::endgroup::'
 
@@ -250,7 +246,7 @@ if [ ! -z "$TIMEOUT" ]; then
 fi
 RV=0
 # Even with set -ex, don't interrupt the printf
-echo "$(printf "%s %q " "::warning::Running command" "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" "${extra_args[@]}")"
-"$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" "${extra_args[@]}" || RV=$?
+echo "$(printf "%s %q " "::warning::Running command" "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}")"
+"$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" || RV=$?
 rm -f "${TIMEDOUT_STAMP_FILE}"
 exit $RV

@@ -37,6 +37,7 @@ export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
 export CI_BASE_BUILD_DIR="$DIR/builds/coq"
 export COQ_CI_BASE_BUILD_DIR="/builds/coq/coq"
 export GITHUB_MAX_CHAR_COUNT="65536"
+IFS=$'\n' export EXTRA_MINIMIZER_ARGUMENTS=($(cat "$DIR/coqbot.extra-args"))
 
 if [[ "${CI_TARGET}" == "TAKE FROM"* ]]; then
     CI_TARGET_FILE="$(echo "${CI_TARGET}" | sed 's/^\s*TAKE FROM //g')"
