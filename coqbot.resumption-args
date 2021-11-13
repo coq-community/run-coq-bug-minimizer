@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2021-10-01-7c5b78d50f
+ci-fiat_crypto_legacy
+4.13.0+flambda
+https://gitlab.com/coq/coq/-/jobs/1777628850/artifacts/download https://gitlab.com/coq/coq/-/jobs/1777628895/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/1776626658/artifacts/download https://gitlab.com/coq/coq/-/jobs/1776626782/artifacts/download
+1a57401e2249e7c824d04afa0b3a169ee72c45fd
+168e9a30a698cd8b55c423ee7ab1eb56aa0b69b4
