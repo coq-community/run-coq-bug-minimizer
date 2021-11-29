@@ -18,7 +18,7 @@ jobs:
         echo '#!/usr/bin/env bash' > github-url.sh
         echo "export GITHUB_WORKFLOW_URL='${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}'" >> github-url.sh
     - name: Run minimizer
-      uses: coq-community/docker-coq-action@v1.2.2
+      uses: coq-community/docker-coq-action@v1.2.4
       with:
         #custom_image: 'registry.gitlab.com/coq/coq:CACHEKEY'
         custom_script: ./timeout-run.sh
