@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2021-10-01-7c5b78d50f
+ci-color
+4.13.0+flambda
+https://gitlab.com/coq/coq/-/jobs/1919186338/artifacts/download https://gitlab.com/coq/coq/-/jobs/1919186381/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/1917524215/artifacts/download https://gitlab.com/coq/coq/-/jobs/1917524241/artifacts/download
+40db45fdd5826f02309ba781f5ee7c842fcf970e
+56743132fb7deaaab040479a722aa07082718874
