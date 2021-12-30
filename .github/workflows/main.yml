@@ -62,6 +62,13 @@ jobs:
         path: tmp.v
       if: always()
 
+    - name: Upload metadata file
+      uses: actions/upload-artifact@v2
+      with:
+        name: metadata
+        path: metadata
+      if: always()
+
     - name: Make a single build artifact
       run: |
         rm -rf /tmp/artifact.tar.gz
