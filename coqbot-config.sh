@@ -135,20 +135,17 @@ function wrap_opam() {
 
 DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-source "$DIR/coqbot-config.sh"
+source "$DIR/coqbot-config.sh" 2>/dev/null
 
 "$file.orig" "\$@" || exit \$?
 
-echo '::group::opam wrap files' >&2
 for i in $@; do
-    echo "attempting to wrap \$i" >&2
     if command -v "\$i"; then
-        pushd "\$(dirname "\$(which "\$i")")"
+        pushd "\$(dirname "\$(which "\$i")")" 2>/dev/null
         wrap_file "\$i"
-        popd
+        popd 2>/dev/null
     fi
 done
-echo '::endgroup::' >&2
 EOF
         sudo chmod --reference="$file.orig" "$file"
     fi
