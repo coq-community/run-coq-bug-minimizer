@@ -137,6 +137,8 @@ DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$DIR/coqbot-config.sh"
 
+"$file.orig" "\$@" || exit \$?
+
 echo '::group::opam wrap files' >&2
 for i in $@; do
     echo "attempting to wrap \$i" >&2
@@ -147,8 +149,6 @@ for i in $@; do
     fi
 done
 echo '::endgroup::' >&2
-
-exec "$file.orig" "\$@"
 EOF
         sudo chmod --reference="$file.orig" "$file"
     fi
