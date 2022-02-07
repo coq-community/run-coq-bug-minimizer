@@ -127,7 +127,7 @@ export -f wrap_file
 function wrap_opam() {
     local file="$(which opam)"
     if [ ! -f "$file.orig" ]; then
-        mv "$file" "$file.orig" || exit $?
+        sudo mv "$file" "$file.orig" || exit $?
         cat > "$file" <<EOF
 #!/usr/bin/env bash
 
