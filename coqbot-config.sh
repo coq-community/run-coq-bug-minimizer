@@ -139,11 +139,15 @@ source "$DIR/coqbot-config.sh"
 
 "$file.orig" "\$@" || exit \$?
 
+eval "\$("$file.orig" env)"
+
 echo '::group::opam wrap files' >&2
+echo "wrapping \$(which opam)" >&2
+wrap_opam $@
 for i in $@; do
     echo "attempting to wrap \$i" >&2
     if command -v "\$i" >/dev/null; then
-        echo "wrapping \$i" >&2
+        echo "wrapping \$(which "\$i")" >&2
         pushd "\$(dirname "\$(which "\$i")")" >/dev/null
         wrap_file "\$i"
         popd >/dev/null
