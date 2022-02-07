@@ -37,6 +37,7 @@ if [ ! -f "$DIR/build.log.orig" ]; then
         source "$DIR/coqbot-ci.sh" 2>&1 | tee "${BUILD_LOG}"
     else
         echo '::group::wrap binaries'
+        wrap_opam coqc coqtop
         for i in coqc coqtop; do
             pushd "$(dirname "$(which "$i")")"
             wrap_file "$i"

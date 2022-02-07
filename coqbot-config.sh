@@ -124,6 +124,33 @@ EOF
 
 export -f wrap_file
 
+function wrap_opam() {
+    local file="$(which opam)"
+    if [ ! -f "$file.orig" ]; then
+        mv "$file" "$file.orig" || exit $?
+        cat > "$file" <<EOF
+#!/usr/bin/env bash
+
+DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+source "$DIR/coqbot-config.sh"
+
+echo '::group::opam wrap files' >&2
+for i in "$@"; do
+    pushd "\$(dirname "\$(which "\$i")")"
+    wrap_file "\$i"
+    popd
+done
+echo '::endgroup::' >&2
+
+exec "$file.orig" "\$@"
+EOF
+            chmod +x "$file"
+    fi
+}
+
+export -f wrap_opam
+
 # print_file max_len title start_code filepath end_code
 function print_file() {
     head_tail="$1"
