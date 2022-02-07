@@ -24,7 +24,7 @@ export FINAL_TMP_FOLDER="$DIR/tmp" # must not change, since the deploy/artifact 
 export TIMEDOUT_STAMP_FILE="$DIR/timedout"
 
 export COQBOT_URL="$(cat "$DIR/coqbot.url")"
-export COQBOT_RESUME_MINIMIZATION_URL="$(cat "$DIR/coqbot.resume-minimization-url")"
+export COQBOT_RESUME_MINIMIZATION_URL="$(cat "$DIR/coqbot.resume-minimization-url" 2>/dev/null)"
 export SURVEY_URL="$(cat "$DIR/coqbot.survey-url")"
 export SURVEY_PR_URL_PARAMETER="$(cat "$DIR/coqbot.survey-pr-url-parameter")"
 export ISSUE_NUMBER="$(cat "$DIR/coqbot.issue-number")"
@@ -33,7 +33,7 @@ export FAILING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.failing-artifact-urls"))
 export PASSING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.passing-artifact-urls"))"
 export COQ_FAILING_SHA="$(echo $(cat "$DIR/coqbot.failing-sha"))"
 export COQ_PASSING_SHA="$(echo $(cat "$DIR/coqbot.passing-sha"))"
-export RESUMPTION_ARGS="$(cat "$DIR/coqbot.resumption-args")" # Only used for communicating with coqbot on minimization resumption
+export RESUMPTION_ARGS="$(cat "$DIR/coqbot.resumption-args" 2>/dev/null)" # Only used for communicating with coqbot on minimization resumption
 export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
 export CI_BASE_BUILD_DIR="$DIR/builds/coq"
 export COQ_CI_BASE_BUILD_DIR="/builds/coq/coq"
@@ -138,10 +138,13 @@ DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$DIR/coqbot-config.sh"
 
 echo '::group::opam wrap files' >&2
-for i in "$@"; do
-    pushd "\$(dirname "\$(which "\$i")")"
-    wrap_file "\$i"
-    popd
+for i in $@; do
+    echo "attempting to wrap \$i" >&2
+    if command -v "\$i"; then
+        pushd "\$(dirname "\$(which "\$i")")"
+        wrap_file "\$i"
+        popd
+    fi
 done
 echo '::endgroup::' >&2
 
