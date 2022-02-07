@@ -143,9 +143,10 @@ echo '::group::opam wrap files' >&2
 for i in $@; do
     echo "attempting to wrap \$i" >&2
     if command -v "\$i"; then
-        pushd "\$(dirname "\$(which "\$i")")"
+        echo "wrapping \$i" >&2
+        pushd "\$(dirname "\$(which "\$i")")" >/dev/null
         wrap_file "\$i"
-        popd
+        popd >/dev/null
     fi
 done
 echo '::endgroup::' >&2
