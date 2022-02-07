@@ -142,7 +142,7 @@ source "$DIR/coqbot-config.sh"
 echo '::group::opam wrap files' >&2
 for i in $@; do
     echo "attempting to wrap \$i" >&2
-    if command -v "\$i"; then
+    if command -v "\$i" >/dev/null; then
         echo "wrapping \$i" >&2
         pushd "\$(dirname "\$(which "\$i")")" >/dev/null
         wrap_file "\$i"
