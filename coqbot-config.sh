@@ -128,7 +128,7 @@ function wrap_opam() {
     local file="$(which opam)"
     if [ ! -f "$file.orig" ]; then
         sudo mv "$file" "$file.orig" || exit $?
-        cat > "$file" <<EOF
+        sudo cat > "$file" <<EOF
 #!/usr/bin/env bash
 
 DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -145,7 +145,7 @@ echo '::endgroup::' >&2
 
 exec "$file.orig" "\$@"
 EOF
-            chmod +x "$file"
+        sudo chmod --reference="$file.orig" "$file"
     fi
 }
 
