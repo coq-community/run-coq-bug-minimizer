@@ -8,7 +8,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 set -x
 
 id="$1"
-comment_contents="Error: Could not minimize file $2 (full log [on GitHub Actions](${GITHUB_WORKFLOW_URL}))"
+comment_contents="Error: Could not minimize file $2 (full log [on GitHub Actions](${GITHUB_WORKFLOW_URL}), cc @JasonGross)"
 comment_contents+="$(print_file tail "$(( 2 * ${GITHUB_MAX_CHAR_COUNT} / 5 ))" "build log" "" "${start_code}" "$3" "${end_code}")"
 comment_contents+="$(print_file tail "$(( 2 * ${GITHUB_MAX_CHAR_COUNT} / 5 ))" "minimizer log" "" "${start_code}" "$4" "${end_code}")"
 comment_contents+="${nl}${nl}$(cat "$DIR/feedback.md")"
