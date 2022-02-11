@@ -11,7 +11,7 @@ comment_contents="Minimized File $2 (full log [on GitHub Actions](${GITHUB_WORKF
 if [ ! -z "${SURVEY_URL}" ] && [ ! -z "${SURVEY_PR_URL_PARAMETER}" ] && [ ! -z "${ISSUE_NUMBER}" ] && [ ! -z "$DIR/early-feedback.md" ] && [ ! -f "${TIMEDOUT_STAMP_FILE}" ]; then
     comment_contents+="${nl}${nl}$(cat "$DIR/early-feedback.md" | sed "s>@SURVEY_URL@>${SURVEY_URL}?${SURVEY_PR_URL_PARAMETER}=${ISSUE_NUMBER}>g")"
 fi
-uninlinable_modules="$(grep '^\s*Modules that could not be inlined:' "$3" | sed 's/^\s*Modules that could not be inlined:\s*/g')"
+uninlinable_modules="$(grep '^\s*Modules that could not be inlined:' "$3" | sed 's/^\s*Modules that could not be inlined:\s*//g')"
 if [ ! -z "${uninlinable_modules}" ]; then
     min_descr="Partially Minimized Coq File (could not inline ${uninlinable_modules})"
 else
