@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2022-02-10-48d860fb4f
+ci-bedrock2
+4.13.0+flambda
+https://gitlab.com/coq/coq/-/jobs/2222163092/artifacts/download https://gitlab.com/coq/coq/-/jobs/2222163254/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/2218665679/artifacts/download https://gitlab.com/coq/coq/-/jobs/2218665708/artifacts/download
+921f76308b5f18bc52126ee6e0590cb1560eb5fd
+8d114c74213615f6c359467b6dceaa2d5af9826c
