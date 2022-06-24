@@ -176,6 +176,8 @@ PASSING_COQPATH="$(echo "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing
 PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g')"
 PASSING_EXEC_PWD="$(echo "${EXEC_PWD}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 
+PASSING_COQTOP="$(echo "$PASSING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
+
 if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
     # we are running with two versions
     NONPASSING_PREFIX="nonpassing"
@@ -223,7 +225,7 @@ done <<< "${FAILING_ARGS}"
 if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
     # are running with two versions
     mkdir -p "${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/"
-    args+=(--passing-coqc="${PASSING_COQC}" --passing-base-dir="${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/")
+    args+=(--passing-coqc="${PASSING_COQC}" --passing-coqtop="${PASSING_COQTOP}" --passing-base-dir="${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/")
     while IFS= read -r line; do
         args+=("$line")
     done <<< "${PASSING_ARGS}"
