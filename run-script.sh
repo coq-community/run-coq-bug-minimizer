@@ -17,6 +17,8 @@ if ! command -v sudo &> /dev/null; then
 fi
 
 sudo chmod a+rw .
+git config --global --add safe.directory /github/workspace
+git config --global --add safe.directory "$(pwd)"
 
 git clone https://github.com/JasonGross/coq-tools.git
 
