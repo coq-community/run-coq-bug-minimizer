@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2022-05-20-028d98bc38
+ci-unimath
+4.14.0+flambda
+https://gitlab.com/coq/coq/-/jobs/2633145454/artifacts/download https://gitlab.com/coq/coq/-/jobs/2633145612/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/2630919296/artifacts/download https://gitlab.com/coq/coq/-/jobs/2630919459/artifacts/download
+3ed332aeac665d034b5f9045ccffcd83ea03d962
+e0a8b3379dfb33277ab4c06a629e44225437c085
