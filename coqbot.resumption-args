@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2022-05-20-028d98bc38
+ci-jasmin
+4.14.0+flambda
+https://gitlab.com/coq/coq/-/jobs/2705169397/artifacts/download https://gitlab.com/coq/coq/-/jobs/2705169510/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/2703036358/artifacts/download https://gitlab.com/coq/coq/-/jobs/2703036512/artifacts/download
+18cf00f4796df43adce6578c15752d839d83c071
+9bc7c1143cdce011e963f3012719f7fba64a96ca
