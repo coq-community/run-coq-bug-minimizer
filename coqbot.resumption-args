@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2022-05-20-028d98bc38
+ci-metacoq
+4.09.0
+https://gitlab.com/coq/coq/-/jobs/2747417118/artifacts/download https://gitlab.com/coq/coq/-/jobs/2747417332/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/2740357134/artifacts/download https://gitlab.com/coq/coq/-/jobs/2740357238/artifacts/download
+a17855e0870d17cd722adfd96b867be2de219445
+ac4d04b83823686f9680680f0377572906fd2232
