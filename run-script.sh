@@ -237,6 +237,9 @@ args+=("${EXTRA_MINIMIZER_ARGUMENTS[@]}")
 
 echo '::endgroup::'
 
+# remove problem matcher so we don't get duplicate spurious error matches
+echo '::remove-matcher owner=coq-problem-matcher::'
+
 eval $(opam env)
 
 pwd
