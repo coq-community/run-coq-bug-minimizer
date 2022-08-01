@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2022-07-24-4b61cc61ca
+ci-hott
+4.09.0
+https://gitlab.com/coq/coq/-/jobs/2789597056/artifacts/download https://gitlab.com/coq/coq/-/jobs/2789597123/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/2781435764/artifacts/download https://gitlab.com/coq/coq/-/jobs/2781435820/artifacts/download
+56d54a3dea84094bbb2dda55e96db0c25f42e626
+0b381b98551f4ea5216f81fc9a087bf399684797
