@@ -1,0 +1,7 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2022-10-13-2c0347368a
+ci-oddorder
+4.14.0+flambda
+https://gitlab.com/coq/coq/-/jobs/3216224824/artifacts/download https://gitlab.com/coq/coq/-/jobs/3216225086/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/3211275102/artifacts/download https://gitlab.com/coq/coq/-/jobs/3211275180/artifacts/download
+bdeac27a428fb842bdf69d9082a8794ee150e6f4
+70ad08b7b468dc0f7f079c5c9e4342015c673879
