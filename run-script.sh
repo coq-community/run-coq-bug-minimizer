@@ -47,7 +47,14 @@ if [ ! -f "$DIR/build.log.orig" ]; then
         done
         echo '::endgroup::'
 
-        source "$DIR/coqbot.sh" 2>&1 | tee "${BUILD_LOG}" || true
+        {
+            ocamlc -config
+            coqc --config
+            coqc --version
+            true | coqtop
+
+            source "$DIR/coqbot.sh"
+        } 2>&1 | tee "${BUILD_LOG}" || true
     fi
 else
     cp -f "$DIR/build.log.orig" "${BUILD_LOG}"
