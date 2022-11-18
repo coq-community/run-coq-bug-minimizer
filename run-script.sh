@@ -161,10 +161,10 @@ echo '::group::process logs'
 set +o pipefail
 
 FILE="$(tac "${BUILD_LOG}" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g; s,^\./,,g')"
-EXEC_AND_PATH_AND_PWD="$(tac "${BUILD_LOG}" | grep -A 3 -F "$FILE" | grep --max-count=1 -A 3 'MINIMIZER_DEBUG: exec')"
-EXEC="$(echo "${EXEC_AND_PATH_AND_PWD}" | grep 'MINIMIZER_DEBUG: exec' | grep -o 'exec:\? .*' | sed 's/^exec:\? //g')"
-COQPATH="$(echo "${EXEC_AND_PATH_AND_PWD}" | grep 'MINIMIZER_DEBUG: coqpath' | grep -o 'COQPATH=.*' | sed 's/^COQPATH=//g')"
-EXEC_PWD="$(echo "${EXEC_AND_PATH_AND_PWD}" | grep 'MINIMIZER_DEBUG: pwd' | grep -o 'PWD=.*' | sed 's/^PWD=//g')"
+DEBUG_PREFIX="$(tac "${BUILD_LOG}" | grep -A 1 -F "$FILE" | grep --max-count=1 -o 'MINIMIZER_DEBUG: info: .*' | sed 's/^MINIMIZER_DEBUG: info: //g')"
+EXEC="$(cat "${DEBUG_PREFIX}.exec")"
+COQPATH="$(cat "${DEBUG_PREFIX}.coqpath")"
+EXEC_PWD="$(cat "${DEBUG_PREFIX}.pwd")"
 
 function split_args_to_lines() {
     for arg in "$@"; do
