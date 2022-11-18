@@ -54,7 +54,8 @@ if [ ! -f "$DIR/build.log.orig" ]; then
             true | coqtop
 
             source "$DIR/coqbot.sh"
-        } 2>&1 | tee "${BUILD_LOG}" || true
+            # use sed to handle opam output
+        } 2>&1| sed 's/^# //g' | tee "${BUILD_LOG}" || true
     fi
 else
     cp -f "$DIR/build.log.orig" "${BUILD_LOG}"
