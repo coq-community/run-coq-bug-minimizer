@@ -113,7 +113,7 @@ for i in "\$@"; do
   fi
 done
 
-debug_prefix="\$(mktemp tmp-coqbot-minimizer.XXXXXXXXXX)"
+debug_prefix="\$(mktemp --tmpdir tmp-coqbot-minimizer.XXXXXXXXXX)"
 echo "\$0" > "\${debug_prefix}"
 echo "\$COQPATH" > "\${debug_prefix}.coqpath"
 pwd > "\${debug_prefix}.pwd"
