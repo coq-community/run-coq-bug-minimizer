@@ -119,15 +119,16 @@ echo "\$COQPATH" > "\${debug_prefix}.coqpath"
 pwd > "\${debug_prefix}.pwd"
 printf "%q " "\${args[@]}" > "\${debug_prefix}.exec"
 
-echo "MINIMIZER_DEBUG: \$0" >&2
 echo "MINIMIZER_DEBUG: info: \${debug_prefix}" >&2
 # extra, not strictly needed
+echo "MINIMIZER_DEBUG_EXTRA: coqc: \$0" >&2
 echo -n "MINIMIZER_DEBUG_EXTRA: coqpath: " >&2
 cat "\${debug_prefix}.coqpath" >&2
 echo -n "MINIMIZER_DEBUG_EXTRA: pwd: PWD=" >&2
 cat "\${debug_prefix}.pwd" >&2
 echo -n "MINIMIZER_DEBUG_EXTRA: exec: " >&2
 cat "\${debug_prefix}.exec" >&2
+echo >&2
 
 exec "\${args[@]}"
 EOF
