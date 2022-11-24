@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# handle-archive.sh [LINK_TEXT] URL
+# handle-web-file.sh [LINK_TEXT] URL
 #
 # Downloads an archive and tries to guess how to build the coq
 # development from it
