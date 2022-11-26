@@ -75,6 +75,7 @@ args=("\$DIR/$file.orig")
 next_is_dir=no
 next_is_special=no
 next_next_is_special=no
+fname=""
 for i in "\$@"; do
   if [ "\${next_is_dir}" == "yes" ]; then
     args+=("\$(readlink -f "\$i")")
@@ -86,6 +87,7 @@ for i in "\$@"; do
     next_is_special="\${next_next_is_special}"
     next_next_is_special=no
   elif [[ "\$i" == *".v" ]]; then
+    fname="\$fname \$i"
     args+=("\$i") # ("\$(readlink -f "\$i")") # we absolutize this later instead of now, to preserve output tests in HB
   else
     args+=("\$i")
@@ -128,8 +130,9 @@ cat "\${debug_prefix}.pwd" >&2
 echo -n "MINIMIZER_DEBUG_EXTRA: exec: " >&2
 cat "\${debug_prefix}.exec" >&2
 echo >&2
-# the one important line
+# the two important lines
 echo "MINIMIZER_DEBUG: info: \${debug_prefix}" >&2
+echo "MINIMIZER_DEBUG: files: \${fname}" >&2
 
 exec "\${args[@]}"
 EOF
