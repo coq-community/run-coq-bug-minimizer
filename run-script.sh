@@ -183,7 +183,7 @@ export -f split_args_to_lines
   FAILING_COQPATH="$COQPATH"
   # some people (like Iris) like to use `coqtop -batch -lv` or similar to process a .v file, so we replace coqtop with coqc
   # Use bash -c to unescape the bash escapes in EXEC
-  FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g')"
+  FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g; s,${COQ_CI_BASE_BUILD_DIR},${CI_BASE_BUILD_DIR}/coq-failing,g')"
   FAILING_EXEC_PWD="${EXEC_PWD}"
 
   FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
