@@ -9,12 +9,14 @@ source "$DIR/coqbot-config.sh"
 
 set -x
 
+# we pipe each step to the bug log in case it fails
+
 if ! command -v sudo &> /dev/null; then
     echo '::group::install sudo'
     su -c 'apt-get update -y'
     su -c 'apt-get install -y sudo'
     echo '::endgroup::'
-fi
+fi 2>&1 | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}"
 
 sudo chmod a+rw .
 git config --global --add safe.directory /github/workspace
@@ -26,12 +28,13 @@ if [ -z "${PYTHON}" ]; then
     PYTHON="$(which python3 || which python)"
 fi
 
-echo '::group::install general dependencies'
-sudo apt-get update -y
-sudo apt-get install -y wget curl
-opam update -y
-eval $(opam env)
-echo '::endgroup::'
+{ echo '::group::install general dependencies'
+  sudo apt-get update -y
+  sudo apt-get install -y wget curl
+  opam update -y
+  eval $(opam env)
+  echo '::endgroup::'
+} 2>&1 | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}"
 
 # Kludge for quicker running locally
 if [ ! -f "$DIR/build.log.orig" ]; then
@@ -156,15 +159,8 @@ function coqpath_to_args() {
     done
 }
 
-echo '::group::process logs'
-
-set +o pipefail
-
-FILE="$(tac "${BUILD_LOG}" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g; s,^\./,,g')"
-DEBUG_PREFIX="$(tac "${BUILD_LOG}" | grep -A 1 -F "$FILE" | grep --max-count=1 -o 'MINIMIZER_DEBUG: info: .*' | sed 's/^MINIMIZER_DEBUG: info: //g')"
-EXEC="$(cat "${DEBUG_PREFIX}.exec")"
-COQPATH="$(cat "${DEBUG_PREFIX}.coqpath")"
-EXEC_PWD="$(cat "${DEBUG_PREFIX}.pwd")"
+# if we get up to here, we don't need to see the earlier steps
+rm -f "${BUG_LOG}"
 
 function split_args_to_lines() {
     for arg in "$@"; do
@@ -173,77 +169,89 @@ function split_args_to_lines() {
 }
 export -f split_args_to_lines
 
-FAILING_COQPATH="$COQPATH"
-# some people (like Iris) like to use `coqtop -batch -lv` or similar to process a .v file, so we replace coqtop with coqc
-# Use bash -c to unescape the bash escapes in EXEC
-FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g')"
-FAILING_EXEC_PWD="${EXEC_PWD}"
+{
+  echo '::group::process logs'
 
-FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
-FAILING_COQ_MAKEFILE="$(cd "$(dirname "${FAILING_COQC}")" && readlink -f coq_makefile)"
+  set +o pipefail
 
-PASSING_COQPATH="$(echo "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
-PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g')"
-PASSING_EXEC_PWD="$(echo "${EXEC_PWD}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
+  FILE="$(tac "${BUILD_LOG}" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g; s,^\./,,g')"
+  DEBUG_PREFIX="$(tac "${BUILD_LOG}" | grep -A 1 -F "$FILE" | grep --max-count=1 -o 'MINIMIZER_DEBUG: info: .*' | sed 's/^MINIMIZER_DEBUG: info: //g')"
+  EXEC="$(cat "${DEBUG_PREFIX}.exec")"
+  COQPATH="$(cat "${DEBUG_PREFIX}.coqpath")"
+  EXEC_PWD="$(cat "${DEBUG_PREFIX}.pwd")"
 
-PASSING_COQTOP="$(echo "$PASSING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
+  FAILING_COQPATH="$COQPATH"
+  # some people (like Iris) like to use `coqtop -batch -lv` or similar to process a .v file, so we replace coqtop with coqc
+  # Use bash -c to unescape the bash escapes in EXEC
+  FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g')"
+  FAILING_EXEC_PWD="${EXEC_PWD}"
 
-if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
-    # we are running with two versions
-    NONPASSING_PREFIX="nonpassing"
-else
-    # we are running only with one version of coqc, so the minimizer doesn't support --nonpassing prefixes
-    NONPASSING_PREFIX=""
-fi
+  FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
+  FAILING_COQ_MAKEFILE="$(cd "$(dirname "${FAILING_COQC}")" && readlink -f coq_makefile)"
 
-FAILING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2; coqpath_to_args "${FAILING_EXEC_PWD}" "${FAILING_COQPATH}") | process_args "${NONPASSING_PREFIX}" "${FILE}") )"
-PASSING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_EXEC_PWD}" "${PASSING_COQPATH}") | process_args passing "${FILE}") )"
-ABS_FILE="$(cd "${EXEC_PWD}" && readlink -f "${FILE}")"
+  PASSING_COQPATH="$(echo "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
+  PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g')"
+  PASSING_EXEC_PWD="$(echo "${EXEC_PWD}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 
-set +o pipefail
+  PASSING_COQTOP="$(echo "$PASSING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 
-echo -n "${ABS_FILE}" > "$DIR/filename"
+  if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
+      # we are running with two versions
+      NONPASSING_PREFIX="nonpassing"
+  else
+      # we are running only with one version of coqc, so the minimizer doesn't support --nonpassing prefixes
+      NONPASSING_PREFIX=""
+  fi
 
-mkdir -p "$(dirname "${BUG_FILE}")"
-mkdir -p "$(dirname "${TMP_FILE}")"
+  FAILING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2; coqpath_to_args "${FAILING_EXEC_PWD}" "${FAILING_COQPATH}") | process_args "${NONPASSING_PREFIX}" "${FILE}") )"
+  PASSING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_EXEC_PWD}" "${PASSING_COQPATH}") | process_args passing "${FILE}") )"
+  ABS_FILE="$(cd "${EXEC_PWD}" && readlink -f "${FILE}")"
 
-cd "$(dirname "${BUG_FILE}")"
+  set +o pipefail
 
-for VAR in FAILING_COQC FAILING_COQTOP FAILING_COQ_MAKEFILE PASSING_COQC; do
-    if [ ! -x "${!VAR}" ]; then
-        echo "Error: Could not find ${VAR} ('${!VAR}')" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
-        echo "Files in '$(dirname ${!VAR})':" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
-        find "$(dirname ${!VAR})" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
-        exit 1
-    fi
-done
+  echo -n "${ABS_FILE}" > "$DIR/filename"
 
-mkdir -p "${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/"
-args=("-y")
-if [ -f "${FINAL_BUG_FILE}" ]; then # resume minimization from the final bug file
-    echo "Resuming minimization from ${FINAL_BUG_FILE}..."
-    echo "Skipping checking of log file..."
-    cp -f "${FINAL_BUG_FILE}" "${BUG_FILE}" # attempt to kludge around https://github.com/JasonGross/coq-tools/issues/42 by placing the bug file in a directory that is not a direct ancestor of the library
-    args+=("${BUG_FILE}" "${BUG_FILE}" "${TMP_FILE}")
-else
-    args+=(    "${ABS_FILE}" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}")
-fi
-args+=(--no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top --verbose-include-failure-warning --verbose-include-failure-warning-prefix "::warning::" --verbose-include-failure-warning-newline "%0A")
-while IFS= read -r line; do
-    args+=("$line")
-done <<< "${FAILING_ARGS}"
-if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
-    # are running with two versions
-    mkdir -p "${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/"
-    args+=(--passing-coqc="${PASSING_COQC}" --passing-coqtop="${PASSING_COQTOP}" --passing-base-dir="${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/")
-    while IFS= read -r line; do
-        args+=("$line")
-    done <<< "${PASSING_ARGS}"
-fi
-args+=(-l - "${BUG_LOG}" --verbose-log-file "9999,${VERBOSE_BUG_LOG}")
-args+=("${EXTRA_MINIMIZER_ARGUMENTS[@]}")
+  mkdir -p "$(dirname "${BUG_FILE}")"
+  mkdir -p "$(dirname "${TMP_FILE}")"
 
-echo '::endgroup::'
+  cd "$(dirname "${BUG_FILE}")"
+
+  for VAR in FAILING_COQC FAILING_COQTOP FAILING_COQ_MAKEFILE PASSING_COQC; do
+      if [ ! -x "${!VAR}" ]; then
+          echo "Error: Could not find ${VAR} ('${!VAR}')" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
+          echo "Files in '$(dirname ${!VAR})':" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
+          find "$(dirname ${!VAR})" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
+          exit 1
+      fi
+  done
+
+  mkdir -p "${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/"
+  args=("-y")
+  if [ -f "${FINAL_BUG_FILE}" ]; then # resume minimization from the final bug file
+      echo "Resuming minimization from ${FINAL_BUG_FILE}..."
+      echo "Skipping checking of log file..."
+      cp -f "${FINAL_BUG_FILE}" "${BUG_FILE}" # attempt to kludge around https://github.com/JasonGross/coq-tools/issues/42 by placing the bug file in a directory that is not a direct ancestor of the library
+      args+=("${BUG_FILE}" "${BUG_FILE}" "${TMP_FILE}")
+  else
+      args+=(    "${ABS_FILE}" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}")
+  fi
+  args+=(--no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top --verbose-include-failure-warning --verbose-include-failure-warning-prefix "::warning::" --verbose-include-failure-warning-newline "%0A")
+  while IFS= read -r line; do
+      args+=("$line")
+  done <<< "${FAILING_ARGS}"
+  if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
+      # are running with two versions
+      mkdir -p "${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/"
+      args+=(--passing-coqc="${PASSING_COQC}" --passing-coqtop="${PASSING_COQTOP}" --passing-base-dir="${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/")
+      while IFS= read -r line; do
+          args+=("$line")
+      done <<< "${PASSING_ARGS}"
+  fi
+  args+=(-l - "${BUG_LOG}" --verbose-log-file "9999,${VERBOSE_BUG_LOG}")
+  args+=("${EXTRA_MINIMIZER_ARGUMENTS[@]}")
+
+  echo '::endgroup::'
+} 2>&1 | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}"
 
 # remove problem matcher so we don't get duplicate spurious error matches
 echo '::remove-matcher owner=coq-problem-matcher::'
