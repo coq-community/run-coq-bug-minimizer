@@ -176,14 +176,14 @@ export -f split_args_to_lines
 
   FILE="$(tac "${BUILD_LOG}" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g; s,^\./,,g')"
   DEBUG_PREFIX="$(tac "${BUILD_LOG}" | grep -A 1 -F "$FILE" | grep --max-count=1 -o 'MINIMIZER_DEBUG: info: .*' | sed 's/^MINIMIZER_DEBUG: info: //g')"
-  EXEC="$(cat "${DEBUG_PREFIX}.exec")"
-  COQPATH="$(cat "${DEBUG_PREFIX}.coqpath")"
-  EXEC_PWD="$(cat "${DEBUG_PREFIX}.pwd")"
+  EXEC="$(cat "${DEBUG_PREFIX}.exec" | sed "s,${COQ_CI_BASE_BUILD_DIR},${CI_BASE_BUILD_DIR}/coq-failing,g")"
+  COQPATH="$(cat "${DEBUG_PREFIX}.coqpath" | sed "s,${COQ_CI_BASE_BUILD_DIR},${CI_BASE_BUILD_DIR}/coq-failing,g")"
+  EXEC_PWD="$(cat "${DEBUG_PREFIX}.pwd" | sed "s,${COQ_CI_BASE_BUILD_DIR},${CI_BASE_BUILD_DIR}/coq-failing,g")"
 
   FAILING_COQPATH="$COQPATH"
   # some people (like Iris) like to use `coqtop -batch -lv` or similar to process a .v file, so we replace coqtop with coqc
   # Use bash -c to unescape the bash escapes in EXEC
-  FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g; s,${COQ_CI_BASE_BUILD_DIR},${CI_BASE_BUILD_DIR}/coq-failing,g')"
+  FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g')"
   FAILING_EXEC_PWD="${EXEC_PWD}"
 
   FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
