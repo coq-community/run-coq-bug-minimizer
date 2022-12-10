@@ -37,7 +37,10 @@ function cleanup() {
         EXTRA_DESCRIPTION="${EXTRA_DESCRIPTION})"
     fi
     if [ -f "${FINAL_BUG_FILE}" ]; then
-        touch "${BUILD_LOG}" "${BUG_LOG}"
+        touch "${BUILD_LOG}" "${BACKUP_BUG_LOG}"
+        if [ ! -f "${BUG_LOG}" ]; then
+            cp -f "${BACKUP_BUG_LOG}" "${BUG_LOG}"
+        fi
         if [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
             echo "TIMEDOUT=1" >> "${METADATA_FILE}"
             echo "RESUMPTION_ARGS=${RESUMPTION_ARGS}" >> "${METADATA_FILE}"
@@ -61,8 +64,13 @@ echo "::add-matcher::$DIR/coq.json"
 
 set -x
 
+source "$DIR/ensure-sudo.sh"
+# we pipe each step to the bug log in case it fails
+
+sudo chmod a+rw .
+
 if [ -z "$TIMEOUT" ]; then
-    "$DIR/run-script.sh" || exit $?
+    "$DIR/run-script.sh" 2>&1 | tee "${BACKUP_BUG_LOG}" || exit $?
 else
-    timeout "$TIMEOUT" "$DIR/run-script.sh" || exit $?
+    timeout "$TIMEOUT" "$DIR/run-script.sh" 2>&1 | tee "${BACKUP_BUG_LOG}" || exit $?
 fi
