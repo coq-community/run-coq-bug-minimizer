@@ -253,8 +253,16 @@ export -f split_args_to_lines
   printf "args are: "
   printf "%q " "${args[@]}"
 
+  args2=("${args[@]}")
+
   echo '::endgroup::'
 } 2>&1 | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}"
+
+printf "args are: "
+printf "%q " "${args[@]}"
+
+printf "args2 are: "
+printf "%q " "${args2[@]}"
 
 # remove problem matcher so we don't get duplicate spurious error matches
 echo '::remove-matcher owner=coq-problem-matcher::'
