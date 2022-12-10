@@ -36,6 +36,10 @@ fi
   echo '::endgroup::'
 } 2>&1 | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}"
 
+echo '::group::eval $(opam env)'
+eval $(opam env)
+echo '::endgroup::'
+
 # Kludge for quicker running locally
 if [ ! -f "$DIR/build.log.orig" ]; then
     if [ "${RUN_KIND}" == "coqbot-ci" ]; then
@@ -58,7 +62,7 @@ if [ ! -f "$DIR/build.log.orig" ]; then
 
             source "$DIR/coqbot.sh"
             # use sed to handle opam output
-        } 2>&1| sed 's/^# //g' | tee "${BUILD_LOG}" || true
+        } 2>&1 | sed 's/^# //g' | tee "${BUILD_LOG}" || true
     fi
 else
     cp -f "$DIR/build.log.orig" "${BUILD_LOG}"
