@@ -16,7 +16,7 @@ if ! command -v sudo &> /dev/null; then
     su -c 'apt-get update -y'
     su -c 'apt-get install -y sudo'
     echo '::endgroup::'
-fi 2>&1 | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}"
+fi
 
 sudo chmod a+rw .
 git config --global --add safe.directory /github/workspace
