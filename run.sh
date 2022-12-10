@@ -38,7 +38,7 @@ function cleanup() {
     fi
     if [ -f "${FINAL_BUG_FILE}" ]; then
         touch "${BUILD_LOG}" "${BACKUP_BUG_LOG}"
-        if [ ! -f "${BUG_LOG}" ]; then
+        if [ ! -f "${BUG_LOG}" ] || ! grep -q '[^[:space:]]' < "${BUG_LOG}"; then
             cp -f "${BACKUP_BUG_LOG}" "${BUG_LOG}"
         fi
         if [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
