@@ -169,6 +169,8 @@ function split_args_to_lines() {
 }
 export -f split_args_to_lines
 
+args_file="$(mktemp --tmpdir tmp-coqbot-minimizer-args.XXXXXXXXXX)"
+
 {
   echo '::group::process logs'
 
@@ -253,25 +255,25 @@ export -f split_args_to_lines
   printf "args are: "
   printf "%q " "${args[@]}"
 
-  args2=("${args[@]}")
+  printf "%q " "${args[@]}" > "${args_file}"
 
   echo '::endgroup::'
+
+  # remove problem matcher so we don't get duplicate spurious error matches
+  echo '::remove-matcher owner=coq-problem-matcher::'
+
+  pwd
+  # remove the .glob file to force the bug finder to remake it with passing coqc
+  rm -f "${FILE/.v/.glob}" "${FILE/.v/.vo}"
+
 } 2>&1 | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}"
 
-printf "args are: "
-printf "%q " "${args[@]}"
+args="$(cat "${args_file}")"
 
-printf "args2 are: "
-printf "%q " "${args2[@]}"
-
-# remove problem matcher so we don't get duplicate spurious error matches
-echo '::remove-matcher owner=coq-problem-matcher::'
+echo "args are: $args"
 
 eval $(opam env)
 
-pwd
-# remove the .glob file to force the bug finder to remake it with passing coqc
-rm -f "${FILE/.v/.glob}" "${FILE/.v/.vo}"
 # we want to have ${TIMEDOUT_STAMP_FILE} exist iff we were killed by
 # timeout, so we create it when we're invoked with a timeout, and then
 # remove it on both successful and unsuccessful completion of the bug
@@ -281,7 +283,7 @@ if [ ! -z "$TIMEOUT" ]; then
 fi
 RV=0
 # Even with set -ex, don't interrupt the printf
-echo "$(printf "%s" "::warning::Running command "; printf "%q " "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}")" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}"
-"$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" || RV=$?
+echo "$(printf "%s" "::warning::Running command "; printf "%q " "$PYTHON" "$DIR/coq-tools/find-bug.py"; printf "%s" "$args")" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}"
+"$PYTHON" "$DIR/coq-tools/find-bug.py" $args || RV=$?
 rm -f "${TIMEDOUT_STAMP_FILE}"
 exit $RV
