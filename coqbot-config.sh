@@ -116,9 +116,9 @@ for i in "\$@"; do
 done
 
 debug_prefix="\$(mktemp --tmpdir tmp-coqbot-minimizer.XXXXXXXXXX)"
-echo "\$0" > "\${debug_prefix}"
-echo "\$COQPATH" > "\${debug_prefix}.coqpath"
-pwd > "\${debug_prefix}.pwd"
+printf "%s" "\$0" > "\${debug_prefix}"
+printf "%s" "\$COQPATH" > "\${debug_prefix}.coqpath"
+printf "%s" "$(pwd)" > "\${debug_prefix}.pwd"
 printf "%q " "\${args[@]}" > "\${debug_prefix}.exec"
 
 # extra, not strictly needed

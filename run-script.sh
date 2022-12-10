@@ -250,6 +250,9 @@ export -f split_args_to_lines
   args+=(-l - "${BUG_LOG}" --verbose-log-file "9999,${VERBOSE_BUG_LOG}")
   args+=("${EXTRA_MINIMIZER_ARGUMENTS[@]}")
 
+  printf "args are: "
+  printf "%q " "${args[@]}"
+
   echo '::endgroup::'
 } 2>&1 | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}"
 
