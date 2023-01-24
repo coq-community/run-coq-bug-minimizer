@@ -123,17 +123,13 @@ printf "%s" "\$(pwd)" > "\${debug_prefix}.pwd"
 printf "%q " "\${args[@]}" > "\${debug_prefix}.exec"
 
 # extra, not strictly needed
-echo "MINIMIZER_DEBUG_EXTRA: coqc: \$0" >&2
-echo -n "MINIMIZER_DEBUG_EXTRA: coqpath: " >&2
-cat "\${debug_prefix}.coqpath" >&2
-echo -n "MINIMIZER_DEBUG_EXTRA: pwd: PWD=" >&2
-cat "\${debug_prefix}.pwd" >&2
-echo -n "MINIMIZER_DEBUG_EXTRA: exec: " >&2
-cat "\${debug_prefix}.exec" >&2
-echo >&2
+>&2 printf "MINIMIZER_DEBUG_EXTRA: coqc: %s\n" "\$0"
+>&2 printf "MINIMIZER_DEBUG_EXTRA: coqpath: %s\n" "\$(cat "\${debug_prefix}.coqpath")"
+>&2 printf "MINIMIZER_DEBUG_EXTRA: pwd: PWD=%s\n" "\$(cat "\${debug_prefix}.pwd")"
+>&2 printf "MINIMIZER_DEBUG_EXTRA: exec: %s\n" "\$(cat "\${debug_prefix}.exec")"
 # the two important lines
-echo "MINIMIZER_DEBUG: info: \${debug_prefix}" >&2
-echo "MINIMIZER_DEBUG: files: \${fname}" >&2
+>&2 printf "MINIMIZER_DEBUG: info: %s\n" "\${debug_prefix}"
+>&2 printf "MINIMIZER_DEBUG: files: %s\n" "\${fname}"
 
 exec "\${args[@]}"
 EOF
