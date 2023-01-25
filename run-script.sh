@@ -173,6 +173,7 @@ FAILING_EXEC_PWD="${EXEC_PWD}"
 
 FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 FAILING_COQ_MAKEFILE="$(cd "$(dirname "${FAILING_COQC}")" && readlink -f coq_makefile)"
+FAILING_COQDEP="$(cd "$(dirname "${FAILING_COQC}")" && readlink -f coqdep)"
 
 PASSING_COQPATH="$(echo "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g')"
@@ -201,7 +202,7 @@ mkdir -p "$(dirname "${TMP_FILE}")"
 
 cd "$(dirname "${BUG_FILE}")"
 
-for VAR in FAILING_COQC FAILING_COQTOP FAILING_COQ_MAKEFILE PASSING_COQC; do
+for VAR in FAILING_COQC FAILING_COQTOP FAILING_COQ_MAKEFILE FAILING_COQDEP PASSING_COQC; do
     if [ ! -x "${!VAR}" ]; then
         echo "Error: Could not find ${VAR} ('${!VAR}')" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
         echo "Files in '$(dirname ${!VAR})':" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
@@ -220,7 +221,7 @@ if [ -f "${FINAL_BUG_FILE}" ]; then # resume minimization from the final bug fil
 else
     args+=(    "${ABS_FILE}" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}")
 fi
-args+=(--no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top --verbose-include-failure-warning --verbose-include-failure-warning-prefix "::warning::" --verbose-include-failure-warning-newline "%0A")
+args+=(--no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${FAILING_COQ_MAKEFILE}" --coqdep "${FAILING_COQDEP}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top --verbose-include-failure-warning --verbose-include-failure-warning-prefix "::warning::" --verbose-include-failure-warning-newline "%0A")
 while IFS= read -r line; do
     args+=("$line")
 done <<< "${FAILING_ARGS}"
