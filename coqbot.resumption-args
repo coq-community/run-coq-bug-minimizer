@@ -1,0 +1,8 @@
+registry.gitlab.com/coq/coq:bionic_coq-V2022-02-16-401854eb90
+ci-geocoq
+4.14.1+flambda
+https://gitlab.com/coq/coq/-/jobs/3888624819/artifacts/download https://gitlab.com/coq/coq/-/jobs/3888624884/artifacts/download
+https://gitlab.com/coq/coq/-/jobs/3881267516/artifacts/download https://gitlab.com/coq/coq/-/jobs/3881267593/artifacts/download
+43df824386d20835da3150435c17d22865c0bede
+1f0523efffc32ea256889fb436c0553cb2120b64
+
