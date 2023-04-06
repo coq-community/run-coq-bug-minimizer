@@ -25,6 +25,10 @@ opam update -y
 eval $(opam env)
 echo '::endgroup::'
 
+echo '::group::opam list'
+opam list
+echo '::endgroup::'
+
 # Kludge for quicker running locally
 if [ ! -f "$DIR/build.log.orig" ]; then
     if [ "${RUN_KIND}" == "coqbot-ci" ]; then
