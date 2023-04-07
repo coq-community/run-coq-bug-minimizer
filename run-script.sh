@@ -23,9 +23,6 @@ sudo apt-get update -y
 sudo apt-get install -y wget curl
 opam update -y
 eval $(opam env)
-# kludge around https://github.com/coq-community/docker-coq/issues/55
-opam pin -y dune --locked
-opam pin -y coq --locked
 echo '::endgroup::'
 
 echo '::group::opam list'
