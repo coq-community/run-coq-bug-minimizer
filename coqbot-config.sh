@@ -34,7 +34,12 @@ export FAILING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.failing-artifact-urls"))
 export PASSING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.passing-artifact-urls"))"
 export COQ_FAILING_SHA="$(echo $(cat "$DIR/coqbot.failing-sha"))"
 export COQ_PASSING_SHA="$(echo $(cat "$DIR/coqbot.passing-sha"))"
-export RESUMPTION_ARGS="$(cat "$DIR/coqbot.resumption-args" 2>/dev/null)" # Only used for communicating with coqbot on minimization resumption
+# this one is tricky, we want to include trailing newlines so we don't
+# lose potentially-empty extra arguments at the end, so we do as in
+# https://stackoverflow.com/a/40717560/377022
+RESUMPTION_ARGS="$(cat "$DIR/coqbot.resumption-args" 2>/dev/null; echo .)"
+RESUMPTION_ARGS="${RESUMPTION_ARGS:0:-1}"
+export RESUMPTION_ARGS # Only used for communicating with coqbot on minimization resumption
 export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
 export CI_BASE_BUILD_DIR="$DIR/builds/coq"
 export COQ_CI_BASE_BUILD_DIR="/builds/coq/coq"
