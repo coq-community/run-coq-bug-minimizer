@@ -15,6 +15,9 @@ uninlinable_modules="$(grep '^\s*Modules that could not be inlined:' "$3" | sed 
 if [ ! -z "${uninlinable_modules}" ]; then
     min_descr="Partially Minimized Coq File (could not inline ${uninlinable_modules})"
     add_to_test_suite=""
+elif [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
+    min_descr="Partially Minimized Coq File (timeout)"
+    add_to_test_suite=""
 else
     min_descr="Minimized Coq File"
     add_to_test_suite=" (consider adding this file to the test-suite)"
