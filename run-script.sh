@@ -18,30 +18,30 @@ if [ -z "${PYTHON}" ]; then
     PYTHON="$(which python3 || which python)"
 fi
 
-echo '::group::install general dependencies'
+printf '::group::install general dependencies\n'
 sudo apt-get update -y
 sudo apt-get install -y wget curl
 opam update -y
 eval $(opam env)
-echo '::endgroup::'
+printf '::endgroup::\n'
 
-echo '::group::opam list'
+printf '::group::opam list\n'
 opam list
-echo '::endgroup::'
+printf '::endgroup::\n'
 
 # Kludge for quicker running locally
 if [ ! -f "$DIR/build.log.orig" ]; then
     if [ "${RUN_KIND}" == "coqbot-ci" ]; then
         source "$DIR/coqbot-ci.sh" 2>&1 | tee "${BUILD_LOG}"
     else
-        echo '::group::wrap binaries'
+        printf '::group::wrap binaries\n'
         wrap_opam coqc coqtop
         for i in coqc coqtop; do
             pushd "$(dirname "$(which "$i")")"
             wrap_file "$i"
             popd
         done
-        echo '::endgroup::'
+        printf '::endgroup::\n'
 
         {
             ocamlc -config
@@ -80,8 +80,8 @@ function process_args() {
             if [ "${found_known_v_file}" == "yes" ]; then
                 : # we want to skip over loading the file which is buggy, and any loads which come after it, but we want to load files that come before it
             else
-                echo "${prev_load}"
-                echo "${prefixed_arg}=$i"
+                printf "%s\n" "${prev_load}"
+                printf "%s=%s\n" "${prefixed_arg}" "$i"
             fi
             prev_load=""
             next_is_known="${next_next_is_known}"
@@ -90,7 +90,7 @@ function process_args() {
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
         elif [ "${next_is_known}" == "yes" ]; then
-            echo "$i"
+            printf "%s\n" "$i"
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
         elif [[ "$i" == *".v" ]]; then
@@ -98,16 +98,16 @@ function process_args() {
         else
             case "$i" in
                 -R|-Q)
-                    echo "${passing_prefix}${i}"
+                    printf "%s%s\n" "${passing_prefix}" "${i}"
                     next_is_known=yes
                     next_next_is_known=yes
                     ;;
                 -I)
-                    echo "${passing_prefix}${i}"
+                    printf "%s%s\n" "${passing_prefix}" "${i}"
                     next_is_known=yes
                     ;;
                 -arg)
-                    echo "${prefixed_arg}"
+                    printf "%s\n" "${prefixed_arg}"
                     next_is_known=yes
                     ;;
                 -l|-lv|-load-vernac-source|-load-vernac-source-verbose)
@@ -128,7 +128,7 @@ function process_args() {
                     skip_next=yes
                     ;;
                 *)
-                    echo "${prefixed_arg}=$i"
+                    printf "%s=%s\n" "${prefixed_arg}" "$i"
                     ;;
             esac
         fi
@@ -140,13 +140,13 @@ function coqpath_to_args() {
     cd "$1"
     local IFS=:
     for i in $2; do
-        echo "-I"
+        printf "-I\n"
         (cd "$i" && pwd)
         while IFS= read -r subdir; do
             if [ -d "$i/$subdir" ]; then
-                echo "-Q"
+                printf "-Q\n"
                 (cd "$i/$subdir" && pwd)
-                echo "$subdir"
+                printf "%s\n" "$subdir"
             fi
         done < <(ls "$i")
     done
@@ -154,12 +154,12 @@ function coqpath_to_args() {
 
 function split_args_to_lines() {
     for arg in "$@"; do
-        echo "$arg"
+        printf "%s\n" "$arg"
     done
 }
 export -f split_args_to_lines
 
-echo '::group::process logs'
+printf '::group::process logs\n'
 
 set +o pipefail
 
@@ -175,13 +175,13 @@ FAILING_COQPATH="$COQPATH"
 FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g')"
 FAILING_EXEC_PWD="${EXEC_PWD}"
 
-FAILING_COQTOP="$(echo "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
+FAILING_COQTOP="$(printf "%s" "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 
-PASSING_COQPATH="$(echo "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
-PASSING_COQC="$(bash -c "echo ${EXEC} | tr ' ' '\n'" | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g')"
-PASSING_EXEC_PWD="$(echo "${EXEC_PWD}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
+PASSING_COQPATH="$(printf "%s" "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
+PASSING_COQC="$(printf '%s\n' ${EXEC} | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g')"
+PASSING_EXEC_PWD="$(printf "%s" "${EXEC_PWD}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 
-PASSING_COQTOP="$(echo "$PASSING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
+PASSING_COQTOP="$(printf "%s" "$PASSING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 PASSING_COQ_MAKEFILE="$(cd "$(dirname "${PASSING_COQC}")" && readlink -f coq_makefile)"
 PASSING_COQDEP="$(cd "$(dirname "${PASSING_COQC}")" && readlink -f coqdep)"
 
@@ -199,7 +199,7 @@ ABS_FILE="$(cd "${EXEC_PWD}" && readlink -f "${FILE}")"
 
 set +o pipefail
 
-echo -n "${ABS_FILE}" > "$DIR/filename"
+printf "%s" "${ABS_FILE}" > "$DIR/filename"
 
 mkdir -p "$(dirname "${BUG_FILE}")"
 mkdir -p "$(dirname "${TMP_FILE}")"
@@ -208,8 +208,8 @@ cd "$(dirname "${BUG_FILE}")"
 
 for VAR in FAILING_COQC FAILING_COQTOP PASSING_COQC PASSING_COQ_MAKEFILE PASSING_COQDEP; do
     if [ ! -x "${!VAR}" ]; then
-        echo "Error: Could not find ${VAR} ('${!VAR}')" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
-        echo "Files in '$(dirname ${!VAR})':" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
+        printf "Error: Could not find %s ('%s')\n" "${VAR}" "${!VAR}" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
+        printf "Files in '%s':\n" "$(dirname ${!VAR})" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
         find "$(dirname ${!VAR})" | tee -a "${BUG_LOG}" "${VERBOSE_BUG_LOG}" >&2
         exit 1
     fi
@@ -218,8 +218,8 @@ done
 mkdir -p "${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/"
 args=("-y")
 if [ -f "${FINAL_BUG_FILE}" ]; then # resume minimization from the final bug file
-    echo "Resuming minimization from ${FINAL_BUG_FILE}..."
-    echo "Skipping checking of log file..."
+    printf "Resuming minimization from %s...\n" "${FINAL_BUG_FILE}"
+    printf "Skipping checking of log file...\n"
     cp -f "${FINAL_BUG_FILE}" "${BUG_FILE}" # attempt to kludge around https://github.com/JasonGross/coq-tools/issues/42 by placing the bug file in a directory that is not a direct ancestor of the library
     args+=("${BUG_FILE}" "${BUG_FILE}" "${TMP_FILE}")
 else
@@ -243,10 +243,10 @@ args+=("${EXTRA_MINIMIZER_ARGUMENTS[@]}")
 printf "args are: "
 printf "%q " "${args[@]}"
 
-echo '::endgroup::'
+printf '::endgroup::\n'
 
 # remove problem matcher so we don't get duplicate spurious error matches
-echo '::remove-matcher owner=coq-problem-matcher::'
+printf '::remove-matcher owner=coq-problem-matcher::\n'
 
 pwd
 # remove the .glob file to force the bug finder to remake it with passing coqc
@@ -263,7 +263,7 @@ if [ ! -z "$TIMEOUT" ]; then
 fi
 RV=0
 # Even with set -ex, don't interrupt the printf
-echo "$(printf "%s" "::warning::Running command "; printf "%q " "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}")"
+printf "%s\n" "$(printf "%s" "::warning::Running command "; printf "%q " "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}")"
 "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" || RV=$?
 rm -f "${TIMEDOUT_STAMP_FILE}"
 exit $RV

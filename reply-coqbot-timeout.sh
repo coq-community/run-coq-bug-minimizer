@@ -10,7 +10,7 @@ bash "$DIR/reply-coqbot.sh" "$@"
 
 id="$1"
 bug_file_contents="$(cat "$3")"
-commit_message="$(echo -n "$(git log -1 --pretty=%B)" | tr '\n' '\t')"
+commit_message="$(printf "%s" "$(git log -1 --pretty=%B)" | tr '\n' '\t')"
 
 file="$(mktemp)"
 cat > "$file" <<EOF

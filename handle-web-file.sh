@@ -15,7 +15,7 @@ if [ -z "$url" ]; then
 fi
 
 if [ -z "$url" ]; then
-    >&2 echo "USAGE: $0 [LINK_TEXT] URL"
+    >&2 printf "USAGE: %s [LINK_TEXT] URL\n" "$0"
     exit 1
 fi
 
@@ -138,7 +138,7 @@ for kind in --bzip2 --xz --lzip --lzma --lzop --gunzip --uncompress --zstd; do
 done
 
 if [ "$success" == "no" ]; then
-    >&2 echo "ERROR: Could not recognize $fname as archive or .v file"
+    >&2 printf "ERROR: Could not recognize %s as archive or .v file\n" "$fname"
     >&2 file "$fname"
     exit 1
 fi

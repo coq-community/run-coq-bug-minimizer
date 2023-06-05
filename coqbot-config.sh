@@ -37,7 +37,7 @@ export COQ_PASSING_SHA="$(echo $(cat "$DIR/coqbot.passing-sha"))"
 # this one is tricky, we want to include trailing newlines so we don't
 # lose potentially-empty extra arguments at the end, so we do as in
 # https://stackoverflow.com/a/40717560/377022
-RESUMPTION_ARGS="$(cat "$DIR/coqbot.resumption-args" 2>/dev/null; echo .)"
+RESUMPTION_ARGS="$(cat "$DIR/coqbot.resumption-args" 2>/dev/null; printf '.\n')"
 RESUMPTION_ARGS="${RESUMPTION_ARGS:0:-1}"
 export RESUMPTION_ARGS # Only used for communicating with coqbot on minimization resumption
 export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
@@ -47,7 +47,7 @@ export GITHUB_MAX_CHAR_COUNT="65536"
 IFS=$'\n' export EXTRA_MINIMIZER_ARGUMENTS=($(cat "$DIR/coqbot.extra-args"))
 
 if [[ "${CI_TARGET}" == "TAKE FROM"* ]]; then
-    CI_TARGET_FILE="$(echo "${CI_TARGET}" | sed 's/^\s*TAKE FROM //g')"
+    CI_TARGET_FILE="$(printf "%s\n" "${CI_TARGET}" | sed 's/^\s*TAKE FROM //g')"
     if [ -f "${CI_TARGET_FILE}" ]; then
         export CI_TARGET="$(cd "$DIR" && grep '^Makefile.ci:.*recipe for target.*failed' "${CI_TARGET_FILE}" | tail -1 | sed "s/^Makefile.ci:.*recipe for target '//g; s/' failed\$//g")"
     else
@@ -162,19 +162,19 @@ source "$DIR/coqbot-config.sh"
 
 eval "\$("$file.orig" env)"
 
-echo '::group::opam wrap files' >&2
-echo "wrapping \$(which opam)" >&2
+printf '::group::opam wrap files\n' >&2
+printf 'wrapping %s\n' "\$(which opam)" >&2
 wrap_opam $@
 for i in $@; do
-    echo "attempting to wrap \$i" >&2
+    printf "attempting to wrap %s\n" "\$i" >&2
     if command -v "\$i" >/dev/null; then
-        echo "wrapping \$(which "\$i")" >&2
+        printf "wrapping %s" "\$(which "\$i")" >&2
         pushd "\$(dirname "\$(which "\$i")")" >/dev/null
         wrap_file "\$i"
         popd >/dev/null
     fi
 done
-echo '::endgroup::' >&2
+printf '::endgroup::\n' >&2
 EOF
         sudo chmod --reference="$file.orig" "$file"
     fi
@@ -205,7 +205,7 @@ function print_file() {
                 truncated="last "
                 ;;
             *)
-                contents="Invalid head_tail='${head_tail}'$(echo; head -c ${max_file_size} "${fname}")"
+                contents="Invalid head_tail='${head_tail}'$(printf '\n'; head -c ${max_file_size} "${fname}")"
                 truncated=""
                 ;;
         esac
@@ -214,11 +214,11 @@ function print_file() {
         title="${title}${extra_title_unless_truncated}"
         contents="$(cat "${fname}")"
     fi
-    echo -n "${nl}${nl}<details><summary>${title}</summary>${nl}${nl}"
-    echo -n "${start_code}"
-    echo -n "${contents}"
-    echo -n "${end_code}"
-    echo -n "${nl}</details>"
+    printf "\n\n<details><summary>%s</summary>\n\n" "${title}"
+    printf "%s" "${start_code}"
+    printf "%s" "${contents}"
+    printf "%s" "${end_code}"
+    printf "\n</details>"
 }
 
 export -f print_file
