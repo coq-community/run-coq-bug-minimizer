@@ -121,10 +121,10 @@ function process_args() {
                     #
                     # we must not pass in -noglob, because we rely on generated glob files
                     ;;
-                -o|-dump-glob)
-                    # We don't pass along -o/-dump-glob arguments,
+                -o|-dump-glob|-time-file)
+                    # We don't pass along -o/-dump-glob/-time-file arguments,
                     # because we're not outputting to the same
-                    # .vo/.glob files
+                    # .vo/.glob/.timing files
                     skip_next=yes
                     ;;
                 *)

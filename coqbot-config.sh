@@ -103,7 +103,7 @@ for i in "\$@"; do
         next_is_special=no
         next_next_is_special=yes
         ;;
-      -I|-include|-coqlib|-exlcude-dir|-load-ml-object|-load-ml-source|-load-vernac-source|-l|-load-vernac-source-verbose|-lv|-init-file|-dump-glob|-o)
+      -I|-include|-coqlib|-exlcude-dir|-load-ml-object|-load-ml-source|-load-vernac-source|-l|-load-vernac-source-verbose|-lv|-init-file|-dump-glob|-o|-time-file)
         next_is_dir=yes
         next_is_special=no
         next_next_is_special=no
