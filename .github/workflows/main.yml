@@ -20,7 +20,7 @@ jobs:
     - name: Run minimizer
       uses: coq-community/docker-coq-action@v1.4.1
       with:
-        #custom_image: 'registry.gitlab.com/coq/coq:CACHEKEY'
+        custom_image: 'registry.gitlab.inria.fr/coq/coq:edge_ubuntu-V2023-08-28-93124ee272'
         #coq_version: 'latest'
         #ocaml_version: 'default'
         custom_script: ./timeout-run.sh
