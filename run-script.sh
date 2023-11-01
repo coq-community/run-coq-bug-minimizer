@@ -140,11 +140,11 @@ function coqpath_to_args() {
     cd "$1"
     local IFS=:
     for i in $2; do
-        printf "-I\n"
+        printf "%s\n" "-I"
         (cd "$i" && pwd)
         while IFS= read -r subdir; do
             if [ -d "$i/$subdir" ]; then
-                printf "-Q\n"
+                printf "%s\n" "-Q"
                 (cd "$i/$subdir" && pwd)
                 printf "%s\n" "$subdir"
             fi
