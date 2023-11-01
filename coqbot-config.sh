@@ -192,10 +192,14 @@ function print_file() {
     fname="$6"
     end_code="$7"
     filesize="$(stat -c%s "${fname}")"
+    head_tail_separator="$(printf '\n\n[...]\n\n')"
     if (( filesize > max_file_size )); then
-        filesize_pretty="$(numfmt --to=iec-i --suffix=B "${filesize}")"
-        max_file_size_pretty="$(numfmt --to=iec-i --suffix=B "${max_file_size}")"
         case "${head_tail}" in
+            head-tail)
+                max_filesize="$(( ( ${max_file_size} - ${#head_tail_separator} ) / 2 ))"
+                contents="$(head -c ${max_file_size} "${fname}")${head_tail_separator}$(tail -c ${max_file_size} "${fname}")"
+                truncated="first and last "
+                ;;
             head)
                 contents="$(head -c ${max_file_size} "${fname}")"
                 truncated=""
@@ -209,6 +213,8 @@ function print_file() {
                 truncated=""
                 ;;
         esac
+        filesize_pretty="$(numfmt --to=iec-i --suffix=B "${filesize}")"
+        max_file_size_pretty="$(numfmt --to=iec-i --suffix=B "${max_file_size}")"
         title="${title} (truncated to ${truncated}${max_file_size_pretty}; full ${filesize_pretty} file on <a href=\"${GITHUB_WORKFLOW_URL}\">GitHub Actions Artifacts</a> under <code>$(realpath --relative-to "$DIR" "${fname}")</code>)"
     else
         title="${title}${extra_title_unless_truncated}"
