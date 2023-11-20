@@ -22,7 +22,7 @@ else
     min_descr="Minimized Coq File"
     add_to_test_suite=" (consider adding this file to the test-suite)"
 fi
-comment_contents+="$(print_file head "$(( ${GITHUB_MAX_CHAR_COUNT} / 2 ))" "${min_descr}" "${add_to_test_suite}" "${start_coq_code}" "$3" "${end_code}")"
+comment_contents+="$(print_file head-tail "$(( ${GITHUB_MAX_CHAR_COUNT} / 2 ))" "${min_descr}" "${add_to_test_suite}" "${start_coq_code}" "$3" "${end_code}")"
 comment_contents+="$(print_file head "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Intermediate Coq File (useful for debugging if minimization did not go as far as you wanted)" "" "${start_coq_code}" "$4" "${end_code}")"
 comment_contents+="$(print_file tail "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Build Log (contains the Coq error message)" "" "${start_code}" "$5" "${end_code}")"
 comment_contents+="$(print_file tail "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Minimization Log" "" "${start_code}" "$6" "${end_code}")"
