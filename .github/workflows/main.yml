@@ -30,42 +30,42 @@ jobs:
       if: always()
 
     - name: Upload output file
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: bug.v
         path: bug.v
       if: always()
 
     - name: Upload output log
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: bug.log
         path: bug.log
       if: always()
 
     - name: Upload verbose output log
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: bug.verbose.log
         path: bug.verbose.log
       if: always()
 
     - name: Upload build log
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build.log
         path: build.log
       if: always()
 
     - name: Upload temp file
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: tmp.v
         path: tmp.v
       if: always()
 
     - name: Upload metadata file
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: metadata
         path: metadata
@@ -83,7 +83,7 @@ jobs:
       if: always()
 
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         # Artifact name
         name: artifact
