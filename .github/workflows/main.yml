@@ -69,6 +69,14 @@ jobs:
         path: tmp.v
       if: always()
 
+    - name: Upload temp log file
+      id: upload-tmp-log
+      uses: actions/upload-artifact@v4
+      with:
+        name: tmp.log
+        path: tmp.log
+      if: always()
+
     - name: Upload metadata file
       id: upload-metadata
       uses: actions/upload-artifact@v4
@@ -80,19 +88,13 @@ jobs:
     - name: Stamp file links
       run: |
         set -x
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-v.outputs.artifact-id }}/zip" | tee bug.v.api.url
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-log.outputs.artifact-id }}/zip" | tee bug.log.api.url
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-verbose-log.outputs.artifact-id }}/zip" | tee bug.verbose.log.api.url
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-build-log.outputs.artifact-id }}/zip" | tee build.log.api.url
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-tmp-v.outputs.artifact-id }}/zip" | tee tmp.v.api.url
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-metadata.outputs.artifact-id }}/zip" | tee metadata.api.url
-
-        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-bug-v.outputs.artifact-id }}" | tee bug.v.url
-        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-bug-log.outputs.artifact-id }}" | tee bug.log.url
-        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-bug-verbose-log.outputs.artifact-id }}" | tee bug.verbose.log.url
-        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-build-log.outputs.artifact-id }}" | tee build.log.url
-        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-tmp-v.outputs.artifact-id }}" | tee tmp.v.url
-        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-metadata.outputs.artifact-id }}" | tee metadata.url
+        ./stamp-artifact-url.sh bug.v "${{ steps.upload-bug-v.outputs.artifact-id }}" "${{ steps.upload-bug-v.outcome }}"
+        ./stamp-artifact-url.sh bug.log "${{ steps.upload-bug-log.outputs.artifact-id }}" "${{ steps.upload-bug-log.outcome }}"
+        ./stamp-artifact-url.sh bug.verbose.log "${{ steps.upload-bug-verbose-log.outputs.artifact-id }}" "${{ steps.upload-bug-verbose-log.outcome }}"
+        ./stamp-artifact-url.sh build.log "${{ steps.upload-build-log.outputs.artifact-id }}" "${{ steps.upload-build-log.outcome }}"
+        ./stamp-artifact-url.sh tmp.v "${{ steps.upload-tmp-v.outputs.artifact-id }}" "${{ steps.upload-tmp-v.outcome }}"
+        ./stamp-artifact-url.sh tmp.log "${{ steps.upload-tmp-log.outputs.artifact-id }}" "${{ steps.upload-tmp-log.outcome }}"
+        ./stamp-artifact-url.sh metadata "${{ steps.upload-metadata.outputs.artifact-id }}" "${{ steps.upload-metadata.outcome }}"
       if: always()
 
     - name: Reply via coqbot
