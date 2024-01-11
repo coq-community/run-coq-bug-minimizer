@@ -73,6 +73,7 @@ function process_args() {
     prev_load=""
     found_known_v_file=no
     while read i; do
+        >&2 printf "process_args: processing (%q)\n" "$i"
         if [[ "$i" == *".v" ]] && [ "$(readlink -f "${known_v_file}")" == "$(readlink -f "$i")" ]; then
             found_known_v_file=yes
         fi
