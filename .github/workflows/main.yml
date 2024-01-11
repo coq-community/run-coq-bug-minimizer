@@ -77,14 +77,15 @@ jobs:
         path: metadata
       if: always()
 
-    - name: Display file links
+    - name: Stamp file links
       run: |
-        echo "bug.v: ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-v.outputs.artifact-id }}/zip'
-        echo "bug.log: ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-log.outputs.artifact-id }}/zip'
-        echo "bug.verbose.log: ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-verbose-log.outputs.artifact-id }}/zip'
-        echo "build.log: ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-build-log.outputs.artifact-id }}/zip'
-        echo "tmp.v: ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-tmp-v.outputs.artifact-id }}/zip'
-        echo "metadata.log: ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-metadata-log.outputs.artifact-id }}/zip'
+        set -x
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-v.outputs.artifact-id }}/zip" | tee bug.v.url
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-log.outputs.artifact-id }}/zip" | tee bug.log.url
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-verbose-log.outputs.artifact-id }}/zip" | tee bug.verbose.log.url
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-build-log.outputs.artifact-id }}/zip" | tee build.log.url
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-tmp-v.outputs.artifact-id }}/zip" | tee tmp.v.url
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-metadata-log.outputs.artifact-id }}/zip" | tee metadata.log.url
       if: always()
 
     - name: Make a single build artifact
