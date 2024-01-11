@@ -205,6 +205,7 @@ printf "%s" "${ABS_FILE}" > "$DIR/filename"
 
 mkdir -p "$(dirname "${BUG_FILE}")"
 mkdir -p "$(dirname "${TMP_FILE}")"
+mkdir -p "$(dirname "${TMP_LOG}")"
 
 cd "$(dirname "${BUG_FILE}")"
 
@@ -225,7 +226,7 @@ if [ -f "${FINAL_BUG_FILE}" ]; then # resume minimization from the final bug fil
     cp -f "${FINAL_BUG_FILE}" "${BUG_FILE}" # attempt to kludge around https://github.com/JasonGross/coq-tools/issues/42 by placing the bug file in a directory that is not a direct ancestor of the library
     args+=("${BUG_FILE}" "${BUG_FILE}" "${TMP_FILE}")
 else
-    args+=("${ABS_FILE}" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}")
+    args+=("${ABS_FILE}" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}" --temp-file-log="${TMP_LOG}")
 fi
 args+=(--no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${PASSING_COQ_MAKEFILE}" --coqdep "${PASSING_COQDEP}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top --verbose-include-failure-warning --verbose-include-failure-warning-prefix "::warning::" --verbose-include-failure-warning-newline "%0A")
 printf 'appending failing args: %q\n' "${FAILING_ARGS}"
