@@ -90,6 +90,7 @@ function process_args() {
         elif [ "${skip_next}" == "yes" ]; then
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
+            skip_next=no
         elif [ "${next_is_known}" == "yes" ]; then
             printf "%s\n" "$i"
             next_is_known="${next_next_is_known}"
