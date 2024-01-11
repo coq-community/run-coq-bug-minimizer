@@ -13,20 +13,20 @@ if [ ! -z "${SURVEY_URL}" ] && [ ! -z "${SURVEY_PR_URL_PARAMETER}" ] && [ ! -z "
 fi
 uninlinable_modules="$(grep '^\s*Modules that could not be inlined:' "$3" | sed 's/^\s*Modules that could not be inlined:\s*//g')"
 if [ ! -z "${uninlinable_modules}" ]; then
-    min_descr="Partially Minimized Coq File (could not inline ${uninlinable_modules})"
+    min_descr=":star: :building_construction: Partially Minimized Coq File (could not inline ${uninlinable_modules})"
     add_to_test_suite=""
 elif [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
-    min_descr="Partially Minimized Coq File (timeout)"
+    min_descr=":star: :stopwatch: Partially Minimized Coq File (timeout)"
     add_to_test_suite=""
 else
-    min_descr="Minimized Coq File"
+    min_descr=":star2: Minimized Coq File"
     add_to_test_suite=" (consider adding this file to the test-suite)"
 fi
 comment_contents+="$(print_file head-tail "$(( ${GITHUB_MAX_CHAR_COUNT} / 2 ))" "${min_descr}" "${add_to_test_suite}" "${start_coq_code}" "$3" "${end_code}")"
-comment_contents+="$(print_file head "$(( 3 * ${GITHUB_MAX_CHAR_COUNT} / 32 ))" "Intermediate Coq File (useful for debugging if minimization did not go as far as you wanted)" "" "${start_coq_code}" "$4" "${end_code}")"
-comment_contents+="$(print_file tail "$(( 1 * ${GITHUB_MAX_CHAR_COUNT} / 32 ))" "Intermediate Coq File log (useful for debugging if minimization did not go as far as you wanted)" "" "${start_coq_code}" "$5" "${end_code}")"
-comment_contents+="$(print_file tail "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Build Log (contains the Coq error message)" "" "${start_code}" "$6" "${end_code}")"
-comment_contents+="$(print_file tail "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" "Minimization Log" "" "${start_code}" "$7" "${end_code}")"
+comment_contents+="$(print_file head "$(( 3 * ${GITHUB_MAX_CHAR_COUNT} / 32 ))" ":hammer_and_wrench: Intermediate Coq File (useful for debugging if minimization did not go as far as you wanted)" "" "${start_coq_code}" "$4" "${end_code}")"
+comment_contents+="$(print_file tail "$(( 1 * ${GITHUB_MAX_CHAR_COUNT} / 32 ))" ":hammer_and_wrench: :scroll: Intermediate Coq File log (useful for debugging if minimization did not go as far as you wanted)" "" "${start_coq_code}" "$5" "${end_code}")"
+comment_contents+="$(print_file tail "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" ":scroll: Build Log (contains the Coq error message)" "" "${start_code}" "$6" "${end_code}")"
+comment_contents+="$(print_file tail "$(( ${GITHUB_MAX_CHAR_COUNT} / 8 ))" ":scroll: :mag_right: Minimization Log" "" "${start_code}" "$7" "${end_code}")"
 comment_contents+="${nl}${nl}$(cat "$DIR/feedback.md")"
 if [ ! -z "${uninlinable_modules}" ]; then
     comment_contents+="${nl}${nl}cc @JasonGross"
