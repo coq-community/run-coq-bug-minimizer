@@ -59,8 +59,11 @@ function cleanup() {
         printf bash "$DIR/reply-coqbot-error.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${BUILD_LOG}" "${BUG_LOG}" >> "${CUSTOM_REPLY_COQBOT_FILE}"
         printf '\n' >> "${CUSTOM_REPLY_COQBOT_FILE}"
     fi
+    printf '::endgroup::\n'
+    printf '::group::cat %q\n' "${CUSTOM_REPLY_COQBOT_FILE}"
     chmod +x "${CUSTOM_REPLY_COQBOT_FILE}"
     cat "${CUSTOM_REPLY_COQBOT_FILE}"
+    ls -la "$DIR"
     printf '::endgroup::\n'
     exit $RC
 }
