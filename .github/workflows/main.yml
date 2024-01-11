@@ -98,7 +98,11 @@ jobs:
       if: always()
 
     - name: Reply via coqbot
-      run: ./custom-reply-coqbot.sh
+      run: |
+        set -x
+        pwd
+        ls -la
+        ./custom-reply-coqbot.sh
       if: always()
 
     - name: Make a single build artifact
