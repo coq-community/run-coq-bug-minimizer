@@ -46,7 +46,7 @@ jobs:
       if: always()
 
     - name: Upload verbose output log
-      id: upload-bug-verbose.log
+      id: upload-bug-verbose-log
       uses: actions/upload-artifact@v4
       with:
         name: bug.verbose.log
