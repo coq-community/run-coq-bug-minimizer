@@ -7,7 +7,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 set -x
 
 id="$1"
-comment_contents="Minimized File $2 (full log [on GitHub Actions](${GITHUB_WORKFLOW_URL}))"
+comment_contents="Minimized File $2 (full log [on GitHub Actions](${GITHUB_WORKFLOW_URL})$(if_wrap_with_url "${VERBOSE_BUG_LOG}" " - " "verbose log" "" ""))"
 if [ ! -z "${SURVEY_URL}" ] && [ ! -z "${SURVEY_PR_URL_PARAMETER}" ] && [ ! -z "${ISSUE_NUMBER}" ] && [ ! -z "$DIR/early-feedback.md" ] && [ ! -f "${TIMEDOUT_STAMP_FILE}" ]; then
     comment_contents+="${nl}${nl}$(cat "$DIR/early-feedback.md" | sed "s>@SURVEY_URL@>${SURVEY_URL}?${SURVEY_PR_URL_PARAMETER}=${ISSUE_NUMBER}>g")"
 fi

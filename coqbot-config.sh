@@ -21,6 +21,7 @@ export VERBOSE_BUG_LOG="$DIR/bug.verbose.log" # must not change, since the deplo
 export BACKUP_BUG_LOG="$DIR/bug.backup.log"
 export METADATA_FILE="$DIR/metadata" # must not change, since the deploy/artifact script looks for it
 export FINAL_TMP_FOLDER="$DIR/tmp" # must not change, since the deploy/artifact script looks for it
+export CUSTOM_REPLY_COQBOT_FILE="$DIR/custom-reply-coqbot.sh" # must not change, since we run this file from GH actions # file we write to so we can reply after stamping urls
 
 export TIMEDOUT_STAMP_FILE="$DIR/timedout"
 
@@ -44,7 +45,6 @@ export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
 export CI_BASE_BUILD_DIR="$DIR/builds/coq"
 export COQ_CI_BASE_BUILD_DIR="/builds/coq/coq"
 export GITHUB_MAX_CHAR_COUNT="65536"
-export CUSTOM_REPLY_COQBOT_FILE="$DIR/custom-reply-coqbot.sh" # file we write to so we can reply after stamping urls
 IFS=$'\n' export EXTRA_MINIMIZER_ARGUMENTS=($(cat "$DIR/coqbot.extra-args"))
 
 if [[ "${CI_TARGET}" == "TAKE FROM"* ]]; then
@@ -183,6 +183,42 @@ EOF
 
 export -f wrap_opam
 
+# if_wrap_with_url file prefix_if_exists description_if_exists postfix_if_exists text_if_does_not_exist
+# if file.url exists, returns an ${prefix_if_exists}<a href=$(cat $file.url)>${description_if_exists}</a>${postfix_if_exists}
+# if file.api.url exists, api-href=... is also included in the a tag
+# if file.url does not exist, just returns ${text_if_does_not_exist}
+function if_wrap_with_url() {
+    file="$1"
+    prefix_if_exists="$2"
+    description_if_exists="$3"
+    postfix_if_exists="$4"
+    text_if_does_not_exist="$5"
+    if [ -f "${file}.url" ] && [ ! -z "$(printf -- $(cat "${file}.url"))" ]; then
+        printf '%s<a href="%s"' "${prefix_if_exists}" "$(printf -- $(cat "${file}.url"))"
+        if [ -f "${file}.api.url" ] && [ ! -z "$(printf -- $(cat "${file}.api.url"))" ]; then
+            # purely for eventual use by coqbot
+            printf ' api-href="%s"' "$(printf -- $(cat "${file}.api.url"))"
+        fi
+        printf '>%s</a>%s' "${description_if_exists}" "${postfix_if_exists}"
+    else
+        printf '%s' "${text_if_does_not_exist}"
+    fi
+}
+
+export -f if_wrap_with_url
+
+# maybe_wrap_with_url description file
+# if file.url exists, returns an <a href=$(cat $file.url)>$description</a>
+# if file.api.url exists, api-href=... is also included in the a tag
+# if file.url does not exist, just returns description
+function maybe_wrap_with_url() {
+    description="$1"
+    file="$2"
+    if_wrap_with_url "$file" "" "$description" "" "$description"
+}
+
+export -f maybe_wrap_with_url
+
 # print_file max_len title start_code filepath end_code
 function print_file() {
     head_tail="$1"
@@ -217,18 +253,7 @@ function print_file() {
         filesize_pretty="$(numfmt --to=iec-i --suffix=B "${filesize}")"
         max_file_size_pretty="$(numfmt --to=iec-i --suffix=B "${max_file_size}")"
         fname_code="<code>$(realpath --relative-to "$DIR" "${fname}")</code>"
-        title="${title} (truncated to ${truncated}${max_file_size_pretty}; full ${filesize_pretty} file on <a href=\"${GITHUB_WORKFLOW_URL}\">GitHub Actions Artifacts</a> under "
-        if [ -f "${fname}.url" ]; then
-            title="${title}<a href=\"$(printf -- $(cat "${fname}.url"))\""
-            if [ -f "${fname}.api.url" ]; then
-                # purely for eventual use by coqbot
-                title="${title} api-href=\"$(printf -- $(cat "${fname}.api.url"))\""
-            fi
-            title="${title}>${fname_code}</a>"
-        else
-            title="${title}${fname_code}"
-        fi
-        title="${title})"
+        title="${title} (truncated to ${truncated}${max_file_size_pretty}; full ${filesize_pretty} file on <a href=\"${GITHUB_WORKFLOW_URL}\">GitHub Actions Artifacts</a> under $(maybe_wrap_with_url "${fname_code}" "${fname}"))"
     else
         title="${title}${extra_title_unless_truncated}"
         contents="$(cat "${fname}")"
