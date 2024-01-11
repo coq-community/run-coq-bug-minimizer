@@ -171,7 +171,7 @@ wrap_opam $@
 for i in $@; do
     printf "attempting to wrap %s\n" "\$i" >&2
     if command -v "\$i" >/dev/null; then
-        printf "wrapping %s" "\$(which "\$i")" >&2
+        printf 'wrapping %s\n' "\$(which "\$i")" >&2
         pushd "\$(dirname "\$(which "\$i")")" >/dev/null
         wrap_file "\$i"
         popd >/dev/null
