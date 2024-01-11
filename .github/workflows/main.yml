@@ -80,12 +80,19 @@ jobs:
     - name: Stamp file links
       run: |
         set -x
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-v.outputs.artifact-id }}/zip" | tee bug.v.url
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-log.outputs.artifact-id }}/zip" | tee bug.log.url
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-verbose-log.outputs.artifact-id }}/zip" | tee bug.verbose.log.url
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-build-log.outputs.artifact-id }}/zip" | tee build.log.url
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-tmp-v.outputs.artifact-id }}/zip" | tee tmp.v.url
-        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-metadata-log.outputs.artifact-id }}/zip" | tee metadata.log.url
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-v.outputs.artifact-id }}/zip" | tee bug.v.api.url
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-log.outputs.artifact-id }}/zip" | tee bug.log.api.url
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-bug-verbose-log.outputs.artifact-id }}/zip" | tee bug.verbose.log.api.url
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-build-log.outputs.artifact-id }}/zip" | tee build.log.api.url
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-tmp-v.outputs.artifact-id }}/zip" | tee tmp.v.api.url
+        printf '%s\n' "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/artifacts/${{ steps.upload-metadata-log.outputs.artifact-id }}/zip" | tee metadata.log.api.url
+
+        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-bug-v.outputs.artifact-id }}" | tee bug.v.url
+        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-bug-log.outputs.artifact-id }}" | tee bug.log.url
+        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-bug-verbose-log.outputs.artifact-id }}" | tee bug.verbose.log.url
+        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-build-log.outputs.artifact-id }}" | tee build.log.url
+        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-tmp-v.outputs.artifact-id }}" | tee tmp.v.url
+        printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-metadata-log.outputs.artifact-id }}" | tee metadata.log.url
       if: always()
 
     - name: Make a single build artifact
