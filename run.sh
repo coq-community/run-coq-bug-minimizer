@@ -61,9 +61,9 @@ function cleanup() {
     fi
     printf '::endgroup::\n'
     printf '::group::cat %q\n' "${CUSTOM_REPLY_COQBOT_FILE}"
-    chmod +x "${CUSTOM_REPLY_COQBOT_FILE}"
+    chmod a+rx "${CUSTOM_REPLY_COQBOT_FILE}"
+    sed "s|${DIR}|"'${DIR}'"|g" -i "${CUSTOM_REPLY_COQBOT_FILE}"
     cat "${CUSTOM_REPLY_COQBOT_FILE}"
-    ls -la "$DIR"
     printf '::endgroup::\n'
     exit $RC
 }
