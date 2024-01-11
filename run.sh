@@ -12,6 +12,7 @@ function cleanup() {
     printf '::group::cleanup\n'
     cp -f "${BUG_FILE}" "${FINAL_BUG_FILE}" || RC=$?
     cp -f "${TMP_FILE}" "${FINAL_TMP_FILE}" || touch "${FINAL_TMP_FILE}"
+    cp -f "${TMP_LOG}" "${FINAL_TMP_LOG}" || touch "${FINAL_TMP_LOG}"
     mkdir -p "${FINAL_TMP_FOLDER}"
     find /tmp | xargs ls -la
     cp -a /tmp "${FINAL_TMP_FOLDER}" || true
@@ -46,10 +47,10 @@ function cleanup() {
         if [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
             printf "TIMEDOUT=1\n" >> "${METADATA_FILE}"
             printf "RESUMPTION_ARGS=%s\n" "${RESUMPTION_ARGS}" >> "${METADATA_FILE}"
-            printf '%q ' bash "$DIR/reply-coqbot-timeout.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${FINAL_TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}" >> "${CUSTOM_REPLY_COQBOT_FILE}"
+            printf '%q ' bash "$DIR/reply-coqbot-timeout.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${FINAL_TMP_FILE}" "${FINAL_TMP_LOG}" "${BUILD_LOG}" "${BUG_LOG}" >> "${CUSTOM_REPLY_COQBOT_FILE}"
             printf '\n' >> "${CUSTOM_REPLY_COQBOT_FILE}"
         else
-            printf '%q ' bash "$DIR/reply-coqbot.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${FINAL_TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}" >> "${CUSTOM_REPLY_COQBOT_FILE}"
+            printf '%q ' bash "$DIR/reply-coqbot.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${FINAL_TMP_FILE}" "${FINAL_TMP_LOG}" "${BUILD_LOG}" "${BUG_LOG}" >> "${CUSTOM_REPLY_COQBOT_FILE}"
             printf '\n' >> "${CUSTOM_REPLY_COQBOT_FILE}"
         fi
     else
