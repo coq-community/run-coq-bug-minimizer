@@ -36,6 +36,8 @@ function cleanup() {
         fi
         EXTRA_DESCRIPTION="${EXTRA_DESCRIPTION})"
     fi
+    printf '%s\n\n' '#!/usr/bin/env bash' 'set -o pipefail' 'DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"' 'source "$DIR/coqbot-config.sh"' > "${CUSTOM_REPLY_COQBOT_FILE}"
+
     if [ -f "${FINAL_BUG_FILE}" ]; then
         touch "${BUILD_LOG}" "${BACKUP_BUG_LOG}"
         if [ ! -f "${BUG_LOG}" ] || ! grep -q '[^[:space:]]' < "${BUG_LOG}"; then
@@ -44,15 +46,20 @@ function cleanup() {
         if [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
             printf "TIMEDOUT=1\n" >> "${METADATA_FILE}"
             printf "RESUMPTION_ARGS=%s\n" "${RESUMPTION_ARGS}" >> "${METADATA_FILE}"
-            bash "$DIR/reply-coqbot-timeout.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${FINAL_TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}"
+            printf '%q ' bash "$DIR/reply-coqbot-timeout.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${FINAL_TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}" >> "${CUSTOM_REPLY_COQBOT_FILE}"
+            printf '\n' >> "${CUSTOM_REPLY_COQBOT_FILE}"
         else
-            bash "$DIR/reply-coqbot.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${FINAL_TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}"
+            printf '%q ' bash "$DIR/reply-coqbot.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${FINAL_BUG_FILE}" "${FINAL_TMP_FILE}" "${BUILD_LOG}" "${BUG_LOG}" >> "${CUSTOM_REPLY_COQBOT_FILE}"
+            printf '\n' >> "${CUSTOM_REPLY_COQBOT_FILE}"
         fi
     else
         touch "${BUILD_LOG}" "${BUG_LOG}"
         printf "ERROR=1\n" >> "${METADATA_FILE}"
-        bash "$DIR/reply-coqbot-error.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${BUILD_LOG}" "${BUG_LOG}"
+        printf bash "$DIR/reply-coqbot-error.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${BUILD_LOG}" "${BUG_LOG}" >> "${CUSTOM_REPLY_COQBOT_FILE}"
+        printf '\n' >> "${CUSTOM_REPLY_COQBOT_FILE}"
     fi
+    chmod +x "${CUSTOM_REPLY_COQBOT_FILE}"
+    cat "${CUSTOM_REPLY_COQBOT_FILE}"
     printf '::endgroup::\n'
     exit $RC
 }

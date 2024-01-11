@@ -95,6 +95,10 @@ jobs:
         printf '%s\n' "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/${{ steps.upload-metadata-log.outputs.artifact-id }}" | tee metadata.log.url
       if: always()
 
+    - name: Reply via coqbot
+      run: custom-reply-coqbot.sh
+      if: always()
+
     - name: Make a single build artifact
       run: |
         rm -rf /tmp/artifact.tar.gz

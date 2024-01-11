@@ -44,6 +44,7 @@ export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
 export CI_BASE_BUILD_DIR="$DIR/builds/coq"
 export COQ_CI_BASE_BUILD_DIR="/builds/coq/coq"
 export GITHUB_MAX_CHAR_COUNT="65536"
+export CUSTOM_REPLY_COQBOT_FILE="$DIR/custom-reply-coqbot.sh" # file we write to so we can reply after stamping urls
 IFS=$'\n' export EXTRA_MINIMIZER_ARGUMENTS=($(cat "$DIR/coqbot.extra-args"))
 
 if [[ "${CI_TARGET}" == "TAKE FROM"* ]]; then
@@ -215,7 +216,19 @@ function print_file() {
         esac
         filesize_pretty="$(numfmt --to=iec-i --suffix=B "${filesize}")"
         max_file_size_pretty="$(numfmt --to=iec-i --suffix=B "${max_file_size}")"
-        title="${title} (truncated to ${truncated}${max_file_size_pretty}; full ${filesize_pretty} file on <a href=\"${GITHUB_WORKFLOW_URL}\">GitHub Actions Artifacts</a> under <code>$(realpath --relative-to "$DIR" "${fname}")</code>)"
+        fname_code="<code>$(realpath --relative-to "$DIR" "${fname}")</code>"
+        title="${title} (truncated to ${truncated}${max_file_size_pretty}; full ${filesize_pretty} file on <a href=\"${GITHUB_WORKFLOW_URL}\">GitHub Actions Artifacts</a> under "
+        if [ -f "${fname}.url" ]; then
+            title="${title}<a href=\"$(printf -- $(cat "${fname}.url"))\""
+            if [ -f "${fname}.api.url" ]; then
+                # purely for eventual use by coqbot
+                title="${title} api-href=\"$(printf -- $(cat "${fname}.api.url"))\""
+            fi
+            title="${title}>${fname_code}</a>"
+        else
+            title="${title}${fname_code}"
+        fi
+        title="${title})"
     else
         title="${title}${extra_title_unless_truncated}"
         contents="$(cat "${fname}")"
