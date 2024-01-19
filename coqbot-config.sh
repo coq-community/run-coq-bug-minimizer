@@ -231,7 +231,7 @@ function print_file() {
     fname="$6"
     end_code="$7"
     filesize="$(stat -c%s "${fname}")"
-    head_tail_separator="$(printf '\n\n[...]\n\n')"
+    head_tail_separator="${nl}${nl}[...]${nl}${nl}"
     if (( filesize > max_file_size )); then
         case "${head_tail}" in
             head-tail)
