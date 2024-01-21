@@ -1,0 +1,8 @@
+registry.gitlab.inria.fr/coq/coq:old_ubuntu_lts-V2024-01-08-011994e15c
+ci-metacoq
+4.09.0
+https://gitlab.inria.fr/coq/coq/-/jobs/3787816/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/3787900/artifacts/download
+https://gitlab.inria.fr/coq/coq/-/jobs/3785580/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/3785664/artifacts/download
+b8ba7d60e5751801b2d4fd0c551b10c6adb581d5
+c38150c76e51e31a49936313d1a99189688341c9
+
