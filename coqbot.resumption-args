@@ -1,0 +1,8 @@
+registry.gitlab.inria.fr/coq/coq:edge_ubuntu-V2024-01-08-6b5ac95a11
+ci-elpi_test
+4.14.1+flambda
+https://gitlab.inria.fr/coq/coq/-/jobs/3787818/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/3787893/artifacts/download
+https://gitlab.inria.fr/coq/coq/-/jobs/3785582/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/3785657/artifacts/download
+b8ba7d60e5751801b2d4fd0c551b10c6adb581d5
+c38150c76e51e31a49936313d1a99189688341c9
+
