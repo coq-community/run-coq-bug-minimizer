@@ -1,0 +1,8 @@
+registry.gitlab.inria.fr/coq/coq:edge_ubuntu-V2024-01-08-6b5ac95a11
+ci-bedrock2
+4.14.1+flambda
+https://gitlab.inria.fr/coq/coq/-/jobs/3814980/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/3815003/artifacts/download
+https://gitlab.inria.fr/coq/coq/-/jobs/3810616/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/3810639/artifacts/download
+078eaa3fa0dfe45aca5948b882a0f759db97ad08
+337b074a999481a6d510ba19112f629901dc3a33
+
