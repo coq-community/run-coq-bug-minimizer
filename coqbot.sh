@@ -1,14 +1,5 @@
-opam update -y
-opam install -y coq-ext-lib
-eval $(opam env)
-
-mkdir temp
-cd temp
-wget https://github.com/coq/coq/files/4698509/bug.v.zip
-unzip bug.v.zip
-coqc -q bug.v
-#git clone https://github.com/satnam6502/oak-hardware
-#cd oak-hardware
-#git checkout 38971a7d0f8aa04b6fa4e21d1dfda3990ecf2c66
-#cd cava/cava
-#make coq
+git clone git@github.com:meta-introspector/metacoq.git --branch=feature/ltac_debug
+cd metacoq
+git checkout 1bc110910d49e2bcf3f3eb111527d4be0d4ad0c7
+opam install --deps-only coq-metacoq
+make
