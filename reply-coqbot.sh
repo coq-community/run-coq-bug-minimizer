@@ -7,7 +7,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 set -x
 
 id="$1"
-title="Minimized File $2 (full log <a href=${dquote}${GITHUB_WORKFLOW_URL}${dquote}>on GitHub Actions</a>)$(if_wrap_with_url "${VERBOSE_BUG_LOG}" " - " "verbose log" "" ""))"
+title="Minimized File $2 (full log <a href=${dquote}${GITHUB_WORKFLOW_URL}${dquote}>on GitHub Actions</a>$(if_wrap_with_url "${VERBOSE_BUG_LOG}" " - " "verbose log" "" ""))"
 uninlinable_modules="$(grep '^\s*Modules that could not be inlined:' "$3" | sed 's/^\s*Modules that could not be inlined:\s*//g')"
 if [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
     header="<details><summary>Minimization interrupted by timeout, being automatically continued. Partially ${title}</summary>"
