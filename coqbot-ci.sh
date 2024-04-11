@@ -12,6 +12,10 @@ printf "::warning::which ocamlfind: '%s'\n" "$(which ocamlfind)"
 printf "::warning::ocamlfind ocamlopt -v: %s\n" "$(ocamlfind ocamlopt -v | tr '\n' '\r' | sed 's/\r/%0A/g')"
 printf '::endgroup::\n'
 
+printf '::group::df -h\n'
+df -h
+printf '::endgroup::\n'
+
 mkdir -p "${CI_BASE_BUILD_DIR}"
 pushd "${CI_BASE_BUILD_DIR}"
 printf '::group::clone coq\n'
@@ -21,6 +25,10 @@ cat coq/.git/config
 (cd coq; git remote update >/dev/null)
 cp -a coq coq-failing
 cp -a coq coq-passing
+printf '::endgroup::\n'
+
+printf '::group::df -h\n'
+df -h
 printf '::endgroup::\n'
 
 printf "::group::download failing artifacts @ %s %s\n" "${COQ_FAILING_SHA}" "${FAILING_ARTIFACT_URLS}"
@@ -35,6 +43,10 @@ done
 popd
 printf '::endgroup::\n'
 
+printf '::group::df -h\n'
+df -h
+printf '::endgroup::\n'
+
 printf "::group::download passing artifacts @ %s %s\n" "${COQ_PASSING_SHA}" "${PASSING_ARTIFACT_URLS}"
 printf "::warning::download passing artifacts @ %s %s\n" "${COQ_PASSING_SHA}" "${PASSING_ARTIFACT_URLS}"
 pushd coq-passing
@@ -45,6 +57,10 @@ for i in ${PASSING_ARTIFACT_URLS}; do
     unzip -o "artifact-$hash.zip"
 done
 popd
+printf '::endgroup::\n'
+
+printf '::group::df -h\n'
+df -h
 printf '::endgroup::\n'
 
 printf '::group::wrap binaries\n'
