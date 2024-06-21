@@ -1,0 +1,8 @@
+registry.gitlab.inria.fr/coq/coq:edge_ubuntu-V2024-02-08-3ed9c93d7c
+ci-iris
+4.14.1+flambda
+https://gitlab.inria.fr/coq/coq/-/jobs/4471364/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/4471436/artifacts/download
+https://gitlab.inria.fr/coq/coq/-/jobs/4470818/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/4470890/artifacts/download
+769ea86bab777f67aa5e7e4a4176a5bbbe606a42
+bb86b07c01edd644dd774625b13b414fefc75f21
+
