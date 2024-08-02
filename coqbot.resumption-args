@@ -1,0 +1,8 @@
+registry.gitlab.inria.fr/coq/coq:edge_ubuntu-V2024-06-26-c5d508ba41
+ci-vst
+4.14.1+flambda
+https://gitlab.inria.fr/coq/coq/-/jobs/4615145/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/4615243/artifacts/download
+https://gitlab.inria.fr/coq/coq/-/jobs/4612131/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/4612229/artifacts/download
+993b6be201601aac956cabc719241f4c35559b1a
+58322e2da510abf2b51aff18bd47bc910590287f
+
