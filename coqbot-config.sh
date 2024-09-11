@@ -68,8 +68,10 @@ fi
 
 function backup() {
     if [ -f "$1" ]; then
-        backup "$2" "$2.bak"
-        rm "$2"
+        if [ -f "$2" ]; then
+            backup "$2" "$2.bak"
+            rm "$2"
+        fi
         cp "$1" "$2"
     fi
 }
