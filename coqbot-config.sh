@@ -66,6 +66,16 @@ else
     export RUN_KIND=coqbot
 fi
 
+function backup() {
+    if [ -f "$1" ]; then
+        backup "$2" "$2.bak"
+        rm "$2"
+        cp "$1" "$2"
+    fi
+}
+
+export -f backup
+
 function wrap_file() {
     local file="$1"
     # coqdep output needs to be pristine for use in coq_makefile;
@@ -74,9 +84,7 @@ function wrap_file() {
     # something other than file output, so we just exclude these three
     # files
     if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]]; then
-        if [ ! -f "$file.orig" ]; then
-            mv "$file" "$file.orig" || exit $?
-            cat > "$file" <<EOF
+        cat > "$file.new" <<EOF
 #!/usr/bin/env bash
 
 DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -143,12 +151,32 @@ printf "%q " "\${args[@]}" > "\${debug_prefix}.exec"
 
 exec "\${args[@]}"
 EOF
-            chmod +x "$file"
+        chmod +x "$file.new"
+        # if file.new is not the same as file
+        if ! cmp -s "$file" "$file.new" || [ ! -f "$file.orig" ]; then
+            backup "$file" "$file.orig"
+            mv "$file.new" "$file"
+        else
+            rm "$file.new"
         fi
     fi
 }
 
 export -f wrap_file
+
+# we will unwrap files before running opam commands, so that if
+# we reinstall coq, we don't get tripped up when rewrapping
+function unwrap_file() {
+    local file="$1"
+    # we only unwrap files that we have wrapped
+    if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]]; then
+        if [ -f "$file.orig" ]; then
+            mv -f "$file.orig" "$file" || exit $?
+        fi
+    fi
+}
+
+export -f unwrap_file
 
 function wrap_opam() {
     local file="$(which opam)"
@@ -167,25 +195,50 @@ source "$DIR/coqbot-config.sh"
 
 eval "\$("$file.orig" env)"
 
-printf '::group::opam wrap files\n' >&2
-printf 'wrapping %s\n' "\$(which opam)" >&2
-wrap_opam $@
-for i in $@; do
-    printf "attempting to wrap %s\n" "\$i" >&2
-    if command -v "\$i" >/dev/null; then
-        printf 'wrapping %s\n' "\$(which "\$i")" >&2
-        pushd "\$(dirname "\$(which "\$i")")" >/dev/null
-        wrap_file "\$i"
-        popd >/dev/null
-    fi
-done
-printf '::endgroup::\n' >&2
+>&2 wrap_opam_and_files $@
 EOF
         sudo chmod --reference="$file.orig" "$file"
     fi
 }
 
 export -f wrap_opam
+
+function wrap_opam_and_files() {
+    printf '::group::opam wrap files\n'
+    printf 'wrapping %s\n' "$(which opam)"
+    wrap_opam "$@"
+    for i in "$@"; do
+        printf "attempting to wrap %s\n" "$i"
+        if command -v "$i" >/dev/null; then
+            printf 'wrapping %s\n' "$(which "$i")"
+            pushd "$(dirname "$(which "$i")")" >/dev/null
+            wrap_file "$i"
+            popd >/dev/null
+        fi
+    done
+    printf '::endgroup::\n'
+}
+
+export -f wrap_opam_and_files
+
+
+function unwrap_files() {
+    printf '::group::unwrap files\n'
+    # printf 'unwrapping %s\n' "$(which opam)"
+    # unwrap_opam "$@"
+    for i in "$@"; do
+        printf "attempting to unwrap %s\n" "$i"
+        if command -v "$i" >/dev/null; then
+            printf 'unwrapping %s\n' "$(which "$i")"
+            pushd "$(dirname "$(which "$i")")" >/dev/null
+            unwrap_file "$i"
+            popd >/dev/null
+        fi
+    done
+    printf '::endgroup::\n'
+}
+
+export -f unwrap_files
 
 # if_wrap_with_url file prefix_if_exists description_if_exists postfix_if_exists text_if_does_not_exist
 # if file.url exists, returns an ${prefix_if_exists}<a href=$(cat $file.url)>${description_if_exists}</a>${postfix_if_exists}
