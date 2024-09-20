@@ -1,0 +1,8 @@
+registry.gitlab.inria.fr/coq/coq:edge_ubuntu-V2024-06-26-c5d508ba41
+ci-mathcomp
+4.14.1+flambda
+https://gitlab.inria.fr/coq/coq/-/jobs/4753187/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/4753260/artifacts/download
+https://gitlab.inria.fr/coq/coq/-/jobs/4749631/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/4749704/artifacts/download
+2d2e5a5c1468ac55b5a31cd7abc23a981fccd610
+3b9bd6745971505391ac994e9a57f7d1686716fb
+
