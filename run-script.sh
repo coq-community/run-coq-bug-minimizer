@@ -195,8 +195,11 @@ else
     NONPASSING_PREFIX=""
 fi
 
-FAILING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2; coqpath_to_args "${FAILING_EXEC_PWD}" "${FAILING_COQPATH}") | process_args "${NONPASSING_PREFIX}" "${FILE}") )"
-PASSING_ARGS="$( cd "${EXEC_PWD}" && ( (bash -c "split_args_to_lines ${EXEC}" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_EXEC_PWD}" "${PASSING_COQPATH}") | process_args passing "${FILE}") )"
+argsfile="$(mktemp)"
+{ cd "${EXEC_PWD}" && { { bash -c "split_args_to_lines ${EXEC}" | tail -n +2; coqpath_to_args "${FAILING_EXEC_PWD}" "${FAILING_COQPATH}"; } | process_args "${NONPASSING_PREFIX}" "${FILE}"; }; } > "${argsfile}"
+mapfile -t FAILING_ARGS < "${argsfile}"
+{ cd "${EXEC_PWD}" && { { bash -c "split_args_to_lines ${EXEC}" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_EXEC_PWD}" "${PASSING_COQPATH}"; } | process_args passing "${FILE}"; }; } > "${argsfile}"
+mapfile -t PASSING_ARGS < "${argsfile}"
 ABS_FILE="$(cd "${EXEC_PWD}" && readlink -f "${FILE}")"
 
 set +o pipefail
@@ -229,26 +232,14 @@ else
     args+=("${ABS_FILE}" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}" --temp-file-log="${TMP_LOG}")
 fi
 args+=(--no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${PASSING_COQ_MAKEFILE}" --coqdep "${PASSING_COQDEP}" --base-dir="${FAILING_EXEC_PWD}" -Q "${BUG_TMP_DIR}" Top --verbose-include-failure-warning --verbose-include-failure-warning-prefix "::warning::" --verbose-include-failure-warning-newline "%0A")
-printf 'appending failing args: %q\n' "${FAILING_ARGS}"
-if [ ! -z "${FAILING_ARGS}" ]; then
-    while IFS= read -r line; do
-        args+=("$line")
-    done <<< "${FAILING_ARGS}"
-else
-    printf 'skipping empty failing args\n'
-fi
+printf '%s\n' "$(printf 'appending failing args: '; printf '%q ' "${FAILING_ARGS[@]}")"
+args+=("${FAILING_ARGS[@]}")
 if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
     # are running with two versions
     mkdir -p "${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/"
     args+=(--passing-coqc="${PASSING_COQC}" --passing-coqtop="${PASSING_COQTOP}" --passing-base-dir="${EXEC_PWD}")
-    if [ ! -z "${PASSING_ARGS}" ]; then
-        printf 'appending passing args: %q\n' "${PASSING_ARGS}"
-        while IFS= read -r line; do
-            args+=("$line")
-        done <<< "${PASSING_ARGS}"
-    else
-        printf 'skipping empty passing args\n'
-    fi
+    printf '%s\n' "$(printf 'appending passing args: '; printf '%q ' "${FAILING_ARGS[@]}")"
+    args+=("${PASSING_ARGS[@]}")
 fi
 args+=(-l - "${BUG_LOG}" --verbose-log-file "9999,${VERBOSE_BUG_LOG}")
 args+=("${EXTRA_MINIMIZER_ARGUMENTS[@]}")
