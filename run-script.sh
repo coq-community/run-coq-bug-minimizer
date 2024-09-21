@@ -228,7 +228,7 @@ if [ -f "${FINAL_BUG_FILE}" ]; then # resume minimization from the final bug fil
 else
     args+=("${ABS_FILE}" "${BUG_FILE}" "${TMP_FILE}" --error-log="${BUILD_LOG}" --temp-file-log="${TMP_LOG}")
 fi
-args+=(--no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${PASSING_COQ_MAKEFILE}" --coqdep "${PASSING_COQDEP}" --base-dir="${CI_BASE_BUILD_DIR}/coq-failing/_build_ci/" -Q "${BUG_TMP_DIR}" Top --verbose-include-failure-warning --verbose-include-failure-warning-prefix "::warning::" --verbose-include-failure-warning-newline "%0A")
+args+=(--no-deps --ignore-coq-prog-args --inline-user-contrib --coqc="${FAILING_COQC}" --coqtop="${FAILING_COQTOP}" --coq_makefile="${PASSING_COQ_MAKEFILE}" --coqdep "${PASSING_COQDEP}" --base-dir="${FAILING_EXEC_PWD}" -Q "${BUG_TMP_DIR}" Top --verbose-include-failure-warning --verbose-include-failure-warning-prefix "::warning::" --verbose-include-failure-warning-newline "%0A")
 printf 'appending failing args: %q\n' "${FAILING_ARGS}"
 if [ ! -z "${FAILING_ARGS}" ]; then
     while IFS= read -r line; do
@@ -240,7 +240,7 @@ fi
 if [ "${PASSING_COQC}" != "${FAILING_COQC}" ]; then
     # are running with two versions
     mkdir -p "${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/"
-    args+=(--passing-coqc="${PASSING_COQC}" --passing-coqtop="${PASSING_COQTOP}" --passing-base-dir="${CI_BASE_BUILD_DIR}/coq-passing/_build_ci/")
+    args+=(--passing-coqc="${PASSING_COQC}" --passing-coqtop="${PASSING_COQTOP}" --passing-base-dir="${EXEC_PWD}")
     if [ ! -z "${PASSING_ARGS}" ]; then
         printf 'appending passing args: %q\n' "${PASSING_ARGS}"
         while IFS= read -r line; do
