@@ -1,0 +1,8 @@
+registry.gitlab.inria.fr/coq/coq:edge_ubuntu-V2024-10-02-200ee7e90e
+ci-corn
+4.14.1+flambda
+https://gitlab.inria.fr/coq/coq/-/jobs/4829384/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/4829475/artifacts/download
+https://gitlab.inria.fr/coq/coq/-/jobs/4829252/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/4829343/artifacts/download
+ed8acd10add8deafc26ef6a24720c3671c5fc6d1
+c44e90ec4c7ecdc9113fb51db23db0c5234aa4f9
+
