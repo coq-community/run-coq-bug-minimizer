@@ -1,14 +1,19 @@
-opam update -y
-opam install -y coq-ext-lib
-eval $(opam env)
+opam pin add -y --no-action 'git+https://github.com/womeier/wasmcert-coq.git#ce5f3abb5d290cfb25addd5eb1a245e8d7b8aaaf'
+opam pin add -y --no-action 'git+https://github.com/womeier/certicoqwasm#master'
+opam install -y --confirm-level=unsafe-yes coq-wasm coq-certicoq
+find /home/coq/.opam/4.13.1+flambda/lib/coq/user-contrib/
+cat > test_bug.v <<EOF
+Require Wasm.binary_format_parser.
 
-mkdir temp
-cd temp
-wget https://github.com/coq/coq/files/4698509/bug.v.zip
-unzip bug.v.zip
-coqc -q bug.v
-#git clone https://github.com/satnam6502/oak-hardware
-#cd oak-hardware
-#git checkout 38971a7d0f8aa04b6fa4e21d1dfda3990ecf2c66
-#cd cava/cava
-#make coq
+Declare ML Module "coq-certicoq.plugin".
+Import Wasm.binary_format_parser.
+Import Wasm.datatypes.
+Definition test_bytes : list Byte.byte.
+Admitted.
+Definition test_module : option module.
+exact (run_parse_module test_bytes).
+Defined.
+
+CertiCoq Compile test_module.
+EOF
+coqc -q test_bug.v
