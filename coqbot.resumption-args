@@ -1,0 +1,8 @@
+registry.gitlab.inria.fr/coq/coq:edge_ubuntu-V2024-10-11-e53fa90d32
+ci-analysis
+4.14.1+flambda
+https://gitlab.inria.fr/coq/coq/-/jobs/4919100/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/4919196/artifacts/download
+https://gitlab.inria.fr/coq/coq/-/jobs/4918919/artifacts/download https://gitlab.inria.fr/coq/coq/-/jobs/4919015/artifacts/download
+30198add75c3ed2a2a5f4b27b03295b152339b49
+4786b0a593884629b08cf6dd0765513da35ff6a6
+
