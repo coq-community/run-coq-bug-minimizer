@@ -108,7 +108,7 @@ for i in "\$@"; do
     next_is_special="\${next_next_is_special}"
     next_next_is_special=no
   elif [ "\${next_is_v_file}" == "yes" ] || [[ "\$i" == *".v" ]]; then
-    fname="\$fname \$i"
+    fname="\$fname \$i \$(readlink -f "\$i")"
     args+=("\$i") # ("\$(readlink -f "\$i")") # we absolutize this later instead of now, to preserve output tests in HB
     next_is_v_file=no
   else
