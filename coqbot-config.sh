@@ -107,22 +107,30 @@ for i in "\$@"; do
     args+=("\$i")
     next_is_special="\${next_next_is_special}"
     next_next_is_special=no
-  elif [[ "\$i" == *".v" ]]; then
+  elif [ "\${next_is_v_file}" == "yes" ] || [[ "\$i" == *".v" ]]; then
     fname="\$fname \$i"
     args+=("\$i") # ("\$(readlink -f "\$i")") # we absolutize this later instead of now, to preserve output tests in HB
+    next_is_v_file=no
   else
     args+=("\$i")
     case "\$i" in
       -R|-Q)
+        next_is_v_file=no
         next_is_dir=yes
         next_is_special=no
         next_next_is_special=yes
         ;;
-      -I|-include|-coqlib|-exlcude-dir|-load-ml-object|-load-ml-source|-load-vernac-source|-l|-load-vernac-source-verbose|-lv|-init-file|-dump-glob|-o|-time-file)
+      -I|-include|-coqlib|-exlcude-dir|-load-ml-object|-load-ml-source|-init-file|-dump-glob|-o|-time-file)
+        next_is_v_file=no
         next_is_dir=yes
         next_is_special=no
         next_next_is_special=no
         ;;
+      -load-vernac-source|-l|-load-vernac-source-verbose|-lv)
+        next_is_v_file=yes
+        next_is_dir=no
+        next_is_special=no
+        next_next_is_special=no
       -arg|-compat|-w|-color|-diffs|-mangle-names|-set|-unset|-top|-topfile|-bytecode-compiler|-native-compiler)
         next_is_special=yes
         ;;
