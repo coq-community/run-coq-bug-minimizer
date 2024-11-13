@@ -27,7 +27,7 @@ jobs:
         custom_script: ./timeout-run.sh
       timeout-minutes: 330 # Each job in a workflow can run for up to 6 hours of execution time, we want to make sure there's time to upload the files
 
-    - run: cat bug.v
+    - run: cat bug.v || true
       if: always()
 
     - name: Upload output file
