@@ -131,6 +131,7 @@ for i in "\$@"; do
         next_is_dir=no
         next_is_special=no
         next_next_is_special=no
+        ;;
       -arg|-compat|-w|-color|-diffs|-mangle-names|-set|-unset|-top|-topfile|-bytecode-compiler|-native-compiler)
         next_is_special=yes
         ;;
