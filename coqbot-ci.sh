@@ -63,21 +63,28 @@ printf '::group::df -h\n'
 df -h
 printf '::endgroup::\n'
 
+printf '::group::set up COQ_CI_BASE_BUILD_DIR: %d\n' "${COQ_CI_BASE_BUILD_DIR}"
+sudo mkdir -p "${COQ_CI_BASE_BUILD_DIR}"
+sudo rm -rf "${COQ_CI_BASE_BUILD_DIR}"
+printf '::endgroup::\n'
+
 printf '::group::wrap binaries\n'
-for dir in "${CI_BASE_BUILD_DIR}"/coq-{failing,passing}/_install_ci/bin; do
-    pushd "$dir" >/dev/null
-    printf "::warning::%s/coqc -config: %s\n" "$(pwd)" "$(./coqc -config | tr '\n' '\r' | sed 's/\r/%0A/g')"
+for coqdir in "${CI_BASE_BUILD_DIR}"/coq-{failing,passing}; do
+    tmpcoqdir="${COQ_CI_BASE_BUILD_DIR}/coq"
+    # mv "${coqdir}" "${tmpcoqdir}"
+    ln -s "${coqdir}" "${tmpcoqdir}"
+    pushd "${tmpcoqdir}/_install_ci/bin" >/dev/null
+    printf "::warning::(%s) %s/coqc -config: %s\n" "${coqdir}" "$(pwd)" "$(./coqc -config | tr '\n' '\r' | sed 's/\r/%0A/g')"
     for i in $(ls); do
         wrap_file "$i"
     done
     popd >/dev/null
+    # mv "${tmpcoqdir}" "${coqdir}"
+    rm "${tmpcoqdir}"
 done
 printf '::endgroup::\n'
 
 set +x
-
-sudo mkdir -p "${COQ_CI_BASE_BUILD_DIR}"
-sudo rm -rf "${COQ_CI_BASE_BUILD_DIR}"
 
 printf "::group::make %s (passing)\n" "${CI_TARGET}"
 mv "${CI_BASE_BUILD_DIR}"/coq-passing "${COQ_CI_BASE_BUILD_DIR}"

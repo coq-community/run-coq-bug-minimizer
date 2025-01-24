@@ -61,7 +61,12 @@ function process_args() {
         passing_prefix="--$1"
         prefixed_arg="--$1-arg"
     fi
+    coqlib=""
+    if [ ! -z "$2" ]; then
+        coqlib="$2"
+    fi
     known_v_file="$2"
+    next_is_coqlib=no
     next_is_known=no
     next_next_is_known=no
     skip_next=no
@@ -82,14 +87,21 @@ function process_args() {
             prev_load=""
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
+            next_is_coqlib=no
         elif [ "${skip_next}" == "yes" ]; then
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
             skip_next=no
+            next_is_coqlib=no
         elif [ "${next_is_known}" == "yes" ]; then
             printf "%s\n" "$i"
             next_is_known="${next_next_is_known}"
             next_next_is_known=no
+            next_is_coqlib=no
+        elif [ "${next_is_coqlib}" == "yes" ]; then
+            printf "%s=%s\n" "${prefixed_arg}" "$i"
+            coqlib=""
+            next_is_coqlib=no
         elif [[ "$i" == *".v" ]]; then
             :
         else
@@ -124,6 +136,10 @@ function process_args() {
                     # .vo/.glob/.timing files
                     skip_next=yes
                     ;;
+                -coqlib)
+                    printf "%s=%s\n" "${prefixed_arg}" "$i"
+                    next_is_coqlib=yes
+                    ;;
                 *)
                     printf "%s=%s\n" "${prefixed_arg}" "$i"
                     ;;
@@ -131,6 +147,10 @@ function process_args() {
         fi
         cur_arg=""
     done
+    if [ ! -z "${coqlib}" ]; then
+        printf "%s=%s\n" "${prefixed_arg}" "-coqlib"
+        printf "%s=%s\n" "${prefixed_arg}" "${coqlib}"
+    fi
 }
 
 function coqpath_to_args() {
@@ -165,6 +185,7 @@ DEBUG_PREFIX="$(tac "${BUILD_LOG}" | grep -A 1 -F "$FILE" | grep --max-count=1 -
 EXEC="$(cat "${DEBUG_PREFIX}.exec" | sed "s,${COQ_CI_BASE_BUILD_DIR},${CI_BASE_BUILD_DIR}/coq-failing,g")"
 COQPATH="$(cat "${DEBUG_PREFIX}.coqpath" | sed "s,${COQ_CI_BASE_BUILD_DIR},${CI_BASE_BUILD_DIR}/coq-failing,g")"
 EXEC_PWD="$(cat "${DEBUG_PREFIX}.pwd" | sed "s,${COQ_CI_BASE_BUILD_DIR},${CI_BASE_BUILD_DIR}/coq-failing,g")"
+COQLIB="$(cat "${DEBUG_PREFIX}.config" | sed "s,${COQ_CI_BASE_BUILD_DIR},${CI_BASE_BUILD_DIR}/coq-failing,g" | grep '^COQLIB=' | sed 's/^COQLIB=//g')"
 
 FAILING_COQPATH="$COQPATH"
 # some people (like Iris) like to use `coqtop -batch -lv` or similar to process a .v file, so we replace coqtop with coqc
@@ -177,6 +198,7 @@ FAILING_COQTOP="$(printf "%s" "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 PASSING_COQPATH="$(printf "%s" "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 PASSING_COQC="$(printf '%s\n' ${EXEC} | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g')"
 PASSING_EXEC_PWD="$(printf "%s" "${EXEC_PWD}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
+PASSING_COQLIB="$(printf "%s" "${COQLIB}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 
 PASSING_COQTOP="$(printf "%s" "$PASSING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
 PASSING_COQ_MAKEFILE="$(cd "$(dirname "${PASSING_COQC}")" && readlink -f coq_makefile)"
@@ -191,9 +213,9 @@ else
 fi
 
 argsfile="$(mktemp)"
-{ cd "${EXEC_PWD}" && { { bash -c "split_args_to_lines ${EXEC}" | tail -n +2; coqpath_to_args "${FAILING_EXEC_PWD}" "${FAILING_COQPATH}"; } | process_args "${NONPASSING_PREFIX}" "${FILE}"; }; } > "${argsfile}"
+{ cd "${EXEC_PWD}" && { { bash -c "split_args_to_lines ${EXEC}" | tail -n +2; coqpath_to_args "${FAILING_EXEC_PWD}" "${FAILING_COQPATH}"; } | process_args "${NONPASSING_PREFIX}" "${FILE}" "${FAILING_COQLIB}"; }; } > "${argsfile}"
 mapfile -t FAILING_ARGS < "${argsfile}"
-{ cd "${EXEC_PWD}" && { { bash -c "split_args_to_lines ${EXEC}" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_EXEC_PWD}" "${PASSING_COQPATH}"; } | process_args passing "${FILE}"; }; } > "${argsfile}"
+{ cd "${EXEC_PWD}" && { { bash -c "split_args_to_lines ${EXEC}" | tail -n +2 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g"; coqpath_to_args "${PASSING_EXEC_PWD}" "${PASSING_COQPATH}"; } | process_args passing "${FILE}" "${PASSING_COQLIB}"; }; } > "${argsfile}"
 mapfile -t PASSING_ARGS < "${argsfile}"
 ABS_FILE="$(cd "${EXEC_PWD}" && readlink -f "${FILE}")"
 

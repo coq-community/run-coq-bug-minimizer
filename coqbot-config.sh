@@ -91,11 +91,14 @@ function wrap_file() {
 
 DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-args=("\$DIR/$file.orig")
+progname="\$DIR/$file.orig"
+baseargs=("\$progname")
+args=("\$progname")
 
 next_is_dir=no
 next_is_special=no
 next_next_is_special=no
+isfirst=yes
 fname=""
 for i in "\$@"; do
   if [ "\${next_is_dir}" == "yes" ]; then
@@ -143,6 +146,11 @@ for i in "\$@"; do
         ;;
     esac
   fi
+  # so we can invoke with config
+  if [ "\${isfirst}" == "yes" ] && [[ "\$file" == *rocq ]]; then
+    baseargs+=("\$i")
+    isfirst=no
+  fi
 done
 
 debug_prefix="\$(mktemp --tmpdir tmp-coqbot-minimizer.XXXXXXXXXX)"
@@ -150,12 +158,14 @@ printf "%s" "\$0" > "\${debug_prefix}"
 printf "%s" "\$COQPATH" > "\${debug_prefix}.coqpath"
 printf "%s" "\$(pwd)" > "\${debug_prefix}.pwd"
 printf "%q " "\${args[@]}" > "\${debug_prefix}.exec"
+"\${baseargs[@]}" -config >"\${debug_prefix}.config" 2>&1 || true
 
 # extra, not strictly needed
 >&2 printf "MINIMIZER_DEBUG_EXTRA: coqc: %s\n" "\$0"
 >&2 printf "MINIMIZER_DEBUG_EXTRA: coqpath: %s\n" "\$(cat "\${debug_prefix}.coqpath")"
 >&2 printf "MINIMIZER_DEBUG_EXTRA: pwd: PWD=%s\n" "\$(cat "\${debug_prefix}.pwd")"
 >&2 printf "MINIMIZER_DEBUG_EXTRA: exec: %s\n" "\$(cat "\${debug_prefix}.exec")"
+>&2 printf "MINIMIZER_DEBUG_EXTRA: coqlib: %s\n" "\$(grep COQLIB "\${debug_prefix}.config" | sed 's/COQLIB=//g')"
 # the two important lines
 >&2 printf "MINIMIZER_DEBUG: info: %s\n" "\${debug_prefix}"
 >&2 printf "MINIMIZER_DEBUG: files: %s\n" "\${fname}"
