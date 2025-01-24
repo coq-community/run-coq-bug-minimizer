@@ -148,6 +148,7 @@ function process_args() {
         cur_arg=""
     done
     if [ ! -z "${coqlib}" ]; then
+        >&2 printf "process_args: processing extra coqlib (%q)\n" "${coqlib}"
         printf "%s=%s\n" "${prefixed_arg}" "-coqlib"
         printf "%s=%s\n" "${prefixed_arg}" "${coqlib}"
     fi
