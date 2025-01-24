@@ -285,7 +285,7 @@ if [ ! -z "$TIMEOUT" ]; then
 fi
 RV=0
 # Even with set -ex, don't interrupt the printf
-printf "%s\n" "$(printf "%s" "::warning::Running command "; printf "%q " "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}")"
+printf "%s\n" "$(printf "%s" "::warning::Running command "; printf "%q " "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" | sed 's/%0A/%250A/g')"
 "$PYTHON" "$DIR/coq-tools/find-bug.py" "${args[@]}" || RV=$?
 rm -f "${TIMEDOUT_STAMP_FILE}"
 exit $RV
