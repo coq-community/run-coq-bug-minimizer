@@ -188,7 +188,8 @@ COQPATH="$(cat "${DEBUG_PREFIX}.coqpath" | sed "s,${COQ_CI_BASE_BUILD_DIR},${CI_
 EXEC_PWD="$(cat "${DEBUG_PREFIX}.pwd" | sed "s,${COQ_CI_BASE_BUILD_DIR},${CI_BASE_BUILD_DIR}/coq-failing,g")"
 COQLIB="$(cat "${DEBUG_PREFIX}.config" | sed "s,${COQ_CI_BASE_BUILD_DIR},${CI_BASE_BUILD_DIR}/coq-failing,g" | grep '^COQLIB=' | sed 's/^COQLIB=//g')"
 
-FAILING_COQPATH="$COQPATH"
+FAILING_COQPATH="${COQPATH}"
+FAILING_COQLIB="${COQLIB}"
 # some people (like Iris) like to use `coqtop -batch -lv` or similar to process a .v file, so we replace coqtop with coqc
 # Use bash -c to unescape the bash escapes in EXEC
 FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g; s,bin/rocq top,bin/rocq c,g')"
