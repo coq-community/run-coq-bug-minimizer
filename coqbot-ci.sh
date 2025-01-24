@@ -63,7 +63,7 @@ printf '::group::df -h\n'
 df -h
 printf '::endgroup::\n'
 
-printf '::group::set up COQ_CI_BASE_BUILD_DIR: %d\n' "${COQ_CI_BASE_BUILD_DIR}"
+printf '::group::set up COQ_CI_BASE_BUILD_DIR: %s\n' "${COQ_CI_BASE_BUILD_DIR}"
 sudo mkdir -p "${COQ_CI_BASE_BUILD_DIR}"
 sudo rm -rf "${COQ_CI_BASE_BUILD_DIR}"
 printf '::endgroup::\n'
