@@ -61,11 +61,11 @@ function process_args() {
         passing_prefix="--$1"
         prefixed_arg="--$1-arg"
     fi
-    coqlib=""
-    if [ ! -z "$2" ]; then
-        coqlib="$2"
-    fi
     known_v_file="$2"
+    coqlib=""
+    if [ ! -z "$3" ]; then
+        coqlib="$3"
+    fi
     next_is_coqlib=no
     next_is_known=no
     next_next_is_known=no
