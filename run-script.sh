@@ -190,17 +190,17 @@ COQLIB="$(cat "${DEBUG_PREFIX}.config" | sed "s,${COQ_CI_BASE_BUILD_DIR},${CI_BA
 FAILING_COQPATH="$COQPATH"
 # some people (like Iris) like to use `coqtop -batch -lv` or similar to process a .v file, so we replace coqtop with coqc
 # Use bash -c to unescape the bash escapes in EXEC
-FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g')"
+FAILING_COQC="$(bash -c "split_args_to_lines ${EXEC}" | head -1 | sed 's,bin/coqtop,bin/coqc,g; s,bin/rocq top,bin/rocq c,g')"
 FAILING_EXEC_PWD="${EXEC_PWD}"
 
-FAILING_COQTOP="$(printf "%s" "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
+FAILING_COQTOP="$(printf "%s" "$FAILING_COQC" | sed 's,bin/coqc,bin/coqtop,g; s,bin/rocq top,bin/rocq c,g')"
 
 PASSING_COQPATH="$(printf "%s" "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
-PASSING_COQC="$(printf '%s\n' ${EXEC} | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g')"
+PASSING_COQC="$(printf '%s\n' ${EXEC} | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g; s,bin/rocq top,bin/rocq c,g')"
 PASSING_EXEC_PWD="$(printf "%s" "${EXEC_PWD}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 PASSING_COQLIB="$(printf "%s" "${COQLIB}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 
-PASSING_COQTOP="$(printf "%s" "$PASSING_COQC" | sed 's,bin/coqc,bin/coqtop,g')"
+PASSING_COQTOP="$(printf "%s" "$PASSING_COQC" | sed 's,bin/coqc,bin/coqtop,g; s,bin/rocq top,bin/rocq c,g')"
 PASSING_COQ_MAKEFILE="$(cd "$(dirname "${PASSING_COQC}")" && readlink -f coq_makefile)"
 PASSING_COQDEP="$(cd "$(dirname "${PASSING_COQC}")" && readlink -f coqdep)"
 
