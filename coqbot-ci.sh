@@ -70,7 +70,7 @@ printf '::endgroup::\n'
 
 printf '::group::wrap binaries\n'
 for coqdir in "${CI_BASE_BUILD_DIR}"/coq-{failing,passing}; do
-    tmpcoqdir="${COQ_CI_BASE_BUILD_DIR}/coq"
+    tmpcoqdir="${COQ_CI_BASE_BUILD_DIR}"
     # mv "${coqdir}" "${tmpcoqdir}"
     ln -s "${coqdir}" "${tmpcoqdir}"
     pushd "${tmpcoqdir}/_install_ci/bin" >/dev/null
