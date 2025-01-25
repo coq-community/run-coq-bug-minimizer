@@ -8,8 +8,14 @@ source "$DIR/coqbot-config.sh"
 
 rm -f "${TIMEDOUT_STAMP_FILE}"
 
+start_time="$(date +%s)"
+
 function cleanup() {
     printf '::group::cleanup\n'
+    end_time="$(date +%s)"
+    duration=$((${PRIOR_DURATION} + end_time - start_time))
+    printf '%d\n' "${duration}" > "${DURATION_FILE}"
+    duration_str="$(pretty_seconds "${duration}")"
     cp -f "${BUG_FILE}" "${FINAL_BUG_FILE}" || RC=$?
     cp -f "${TMP_FILE}" "${FINAL_TMP_FILE}" || touch "${FINAL_TMP_FILE}"
     cp -f "${TMP_LOG}" "${FINAL_TMP_LOG}" || touch "${FINAL_TMP_LOG}"
@@ -24,10 +30,10 @@ function cleanup() {
     touch "$DIR/filename"
     FILE="$(cat "$DIR/filename")"
     printf "FILE=%s\n" "${FILE}" >> "${METADATA_FILE}"
-    EXTRA_DESCRIPTION=""
+    EXTRA_DESCRIPTION=" in ${duration_str}"
     printf "CI_TARGET=%s\n" "${CI_TARGET}" >> "${METADATA_FILE}"
     if [ ! -z "${CI_TARGET}" ]; then
-        EXTRA_DESCRIPTION=" (from ${CI_TARGET})"
+        EXTRA_DESCRIPTION="${EXTRA_DESCRIPTION} (from ${CI_TARGET})"
     fi
     if [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
         EXTRA_DESCRIPTION="${EXTRA_DESCRIPTION} (interrupted by timeout"

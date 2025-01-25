@@ -28,6 +28,7 @@ export FINAL_TMP_FOLDER="$DIR/tmp" # must not change, since the deploy/artifact 
 export CUSTOM_REPLY_COQBOT_FILE="$DIR/custom-reply-coqbot.sh" # must not change, since we run this file from GH actions # file we write to so we can reply after stamping urls
 
 export TIMEDOUT_STAMP_FILE="$DIR/timedout"
+export DURATION_FILE="$DIR/coqbot.duration"
 
 export COQBOT_URL="$(cat "$DIR/coqbot.url")"
 export COQBOT_RESUME_MINIMIZATION_URL="$(cat "$DIR/coqbot.resume-minimization-url" 2>/dev/null)"
@@ -39,6 +40,7 @@ export FAILING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.failing-artifact-urls"))
 export PASSING_ARTIFACT_URLS="$(echo $(cat "$DIR/coqbot.passing-artifact-urls"))"
 export COQ_FAILING_SHA="$(echo $(cat "$DIR/coqbot.failing-sha"))"
 export COQ_PASSING_SHA="$(echo $(cat "$DIR/coqbot.passing-sha"))"
+export PRIOR_DURATION="$(echo $(cat "${DURATION_FILE}" 2>/dev/null || echo 0))"
 # this one is tricky, we want to include trailing newlines so we don't
 # lose potentially-empty extra arguments at the end, so we do as in
 # https://stackoverflow.com/a/40717560/377022
@@ -344,3 +346,25 @@ function print_file() {
 }
 
 export -f print_file
+
+function pretty_seconds() {
+    # prints out a human-readable string of the number of seconds, e.g., 1h 2m 3s.  Does not include units that are 0, unless the total time is 0.
+    seconds="$1"
+    if (( seconds == 0 )); then
+        printf "0s"
+    else
+        hours="$(( seconds / 3600 ))"
+        minutes="$(( ( seconds % 3600 ) / 60 ))"
+        seconds="$(( seconds % 60 ))"
+        if (( hours > 0 )); then
+            printf "%dh " "${hours}"
+        fi
+        if (( hours > 0 )) || (( minutes > 0 )); then
+            printf "%dm " "${minutes}"
+        fi
+        printf "%ds" "${seconds}"
+    fi
+    printf "\n"
+}
+
+export -f pretty_seconds
