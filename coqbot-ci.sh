@@ -102,7 +102,4 @@ popd
 mv "${COQ_CI_BASE_BUILD_DIR}" "${CI_BASE_BUILD_DIR}"/coq-failing
 printf '::endgroup::\n'
 
-# TODO: This is a kludge to work around https://github.com/JasonGross/coq-tools/issues/242
-ln -s "${CI_BASE_BUILD_DIR}"/coq-passing "${COQ_CI_BASE_BUILD_DIR}"
-
 set -x
