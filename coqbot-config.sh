@@ -88,15 +88,19 @@ function wrap_file() {
     # something other than file output, so we just exclude these three
     # files
     if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]] && [[ "$file" != *.txt ]]; then
-        # if [[ "$file" == *coqc* ]] || [[ "$file" == *coqtop* ]]; then
-        #     config="$("$file" -config)"
-        # elif [[ "$file" == *rocq* ]]; then
-        #     config="$("$file" c -config)"
-        # else
-        #     config=""
-        # fi
-        # coqlib="$(printf '%s\n' "$config" | grep '^COQLIB=' | sed 's/^COQLIB=//g')"
-        # coqcorelib="$(printf '%s\n' "$config" | grep '^COQCORELIB=' | sed 's/^COQCORELIB=//g')"
+        if [[ "$file" == *coqc* ]] || [[ "$file" == *coqtop* ]]; then
+            config="$("$file" -config)"
+        elif [[ "$file" == *rocq* ]]; then
+            config="$("$file" c -config)"
+        else
+            config=""
+        fi
+        coqlib="$(printf '%s\n' "$config" | grep '^COQLIB=' | sed 's/^COQLIB=//g')"
+        coqcorelib="$(printf '%s\n' "$config" | grep '^COQCORELIB=' | sed 's/^COQCORELIB=//g')"
+        ocamlpath_fragment=""
+        if [ ! -z "$coqcorelib" ]; then
+            ocamlpath_fragment="export OCAMLPATH=\"$coqcorelib\${OCAMLPATH:+:\$OCAMLPATH}\""
+        fi
         cat > "$file.new" <<EOF
 #!/usr/bin/env bash
 
@@ -164,9 +168,12 @@ for i in "\$@"; do
   fi
 done
 
+${ocamlpath_fragment}
+
 debug_prefix="\$(mktemp --tmpdir tmp-coqbot-minimizer.XXXXXXXXXX)"
 printf "%s" "\$0" > "\${debug_prefix}"
 printf "%s" "\$COQPATH" > "\${debug_prefix}.coqpath"
+printf "%s" "\$OCAMLPATH" > "\${debug_prefix}.ocamlpath"
 printf "%s" "\$(pwd)" > "\${debug_prefix}.pwd"
 printf "%q " "\${args[@]}" > "\${debug_prefix}.exec"
 "\${baseargs[@]}" -config >"\${debug_prefix}.config" 2>&1 || true
@@ -174,6 +181,7 @@ printf "%q " "\${args[@]}" > "\${debug_prefix}.exec"
 # extra, not strictly needed
 >&2 printf "MINIMIZER_DEBUG_EXTRA: coqc: %s\n" "\$0"
 >&2 printf "MINIMIZER_DEBUG_EXTRA: coqpath: %s\n" "\$(cat "\${debug_prefix}.coqpath")"
+>&2 printf "MINIMIZER_DEBUG_EXTRA: ocamlpath: %s\n" "\$(cat "\${debug_prefix}.ocamlpath")"
 >&2 printf "MINIMIZER_DEBUG_EXTRA: pwd: PWD=%s\n" "\$(cat "\${debug_prefix}.pwd")"
 >&2 printf "MINIMIZER_DEBUG_EXTRA: exec: %s\n" "\$(cat "\${debug_prefix}.exec")"
 >&2 printf "MINIMIZER_DEBUG_EXTRA: coqlib: %s\n" "\$(grep COQLIB "\${debug_prefix}.config" | sed 's/COQLIB=//g')"
