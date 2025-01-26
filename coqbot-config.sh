@@ -201,7 +201,7 @@ export -f wrap_file
 function unwrap_file() {
     local file="$1"
     # we only unwrap files that we have wrapped
-    if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]]; then
+    if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]] && [[ "$file" != *.txt ]]; then
         if [ -f "$file.orig" ]; then
             mv -f "$file.orig" "$file" || exit $?
         fi
