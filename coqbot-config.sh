@@ -104,7 +104,7 @@ function wrap_file() {
         fi
         ocamlpath_fragment=""
         if [ ! -z "$coqcorelib" ]; then
-            ocamlpath_fragment="export OCAMLPATH=\"$coqcorelib\${OCAMLPATH:+:\$OCAMLPATH}\""
+            ocamlpath_fragment="export OCAMLPATH=\"$(dirname "$coqcorelib")\${OCAMLPATH:+:\$OCAMLPATH}\""
         fi
         cat > "$file.new" <<EOF
 #!/usr/bin/env bash
