@@ -87,7 +87,7 @@ function wrap_file() {
     # to something not in the current directory; coqchk uses -o for
     # something other than file output, so we just exclude these three
     # files
-    if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]]; then
+    if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]] && [[ "$file" != *.txt ]]; then
         # if [[ "$file" == *coqc* ]] || [[ "$file" == *coqtop* ]]; then
         #     config="$("$file" -config)"
         # elif [[ "$file" == *rocq* ]]; then
@@ -201,7 +201,7 @@ export -f wrap_file
 function unwrap_file() {
     local file="$1"
     # we only unwrap files that we have wrapped
-    if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]] && [[ "$file" != *.txt ]]; then
+    if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]]; then
         if [ -f "$file.orig" ]; then
             mv -f "$file.orig" "$file" || exit $?
         fi
