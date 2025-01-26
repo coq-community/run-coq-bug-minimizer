@@ -95,8 +95,13 @@ function wrap_file() {
         else
             config=""
         fi
-        coqlib="$(printf '%s\n' "$config" | grep '^COQLIB=' | sed 's/^COQLIB=//g')"
-        coqcorelib="$(printf '%s\n' "$config" | grep '^COQCORELIB=' | sed 's/^COQCORELIB=//g')"
+        if [[ "$file" == *coqc* ]] || [[ "$file" == *coqtop* ]] || [[ "$file" == *rocq* ]]; then
+            coqlib="$(printf '%s\n' "$config" | grep '^COQLIB=' | sed 's/^COQLIB=//g')"
+            coqcorelib="$(printf '%s\n' "$config" | grep '^COQCORELIB=' | sed 's/^COQCORELIB=//g')"
+        else
+            coqlib=""
+            coqcorelib=""
+        fi
         ocamlpath_fragment=""
         if [ ! -z "$coqcorelib" ]; then
             ocamlpath_fragment="export OCAMLPATH=\"$coqcorelib\${OCAMLPATH:+:\$OCAMLPATH}\""
