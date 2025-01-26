@@ -88,6 +88,15 @@ function wrap_file() {
     # something other than file output, so we just exclude these three
     # files
     if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]]; then
+        # if [[ "$file" == *coqc* ]] || [[ "$file" == *coqtop* ]]; then
+        #     config="$("$file" -config)"
+        # elif [[ "$file" == *rocq* ]]; then
+        #     config="$("$file" c -config)"
+        # else
+        #     config=""
+        # fi
+        # coqlib="$(printf '%s\n' "$config" | grep '^COQLIB=' | sed 's/^COQLIB=//g')"
+        # coqcorelib="$(printf '%s\n' "$config" | grep '^COQCORELIB=' | sed 's/^COQCORELIB=//g')"
         cat > "$file.new" <<EOF
 #!/usr/bin/env bash
 
