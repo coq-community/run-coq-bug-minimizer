@@ -75,7 +75,7 @@ for coqdir in "${CI_BASE_BUILD_DIR}"/coq-{failing,passing}; do
     ln -s "${coqdir}" "${tmpcoqdir}"
     pushd "${tmpcoqdir}/_install_ci/bin" >/dev/null
     printf "::warning::(%s) %s/coqc --config: %s\n" "${coqdir}" "$(pwd)" "$(./coqc --config | tr '\n' '\r' | sed 's/\r/%0A/g')"
-    ./coqc --config | sed "s,${tmpcoqdir},${coqdir},g; "'s,^\([^=]*\)=\(.*\)$,\1="\2",g' > coq_environment.txt
+    ./coqc --config | sed "s,${tmpcoqdir}/,${coqdir}/,g; "'s,^\([^=]*\)=\(.*\)$,\1="\2",g' > coq_environment.txt
     printf "::warning::(%s) setting up coq_environment.txt: %s\n" "${coqdir}" "$(cat coq_environment.txt | tr '\n' '\r' | sed 's/\r/%0A/g')"
     for i in $(ls); do
         wrap_file "$i"
