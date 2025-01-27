@@ -89,9 +89,9 @@ function wrap_file() {
     # files
     if [[ "$file" != *.orig ]] && [[ "$file" != *coqdep* ]] && [[ "$file" != *coq_makefile* ]] && [[ "$file" != *coqchk* ]] && [[ "$file" != *.txt ]]; then
         if [[ "$file" == *coqc* ]] || [[ "$file" == *coqtop* ]]; then
-            config="$("$file" -config)"
+            config="$(./"$file" -config)"
         elif [[ "$file" == *rocq* ]]; then
-            config="$("$file" c -config)"
+            config="$(./"$file" c -config)"
         else
             config=""
         fi
