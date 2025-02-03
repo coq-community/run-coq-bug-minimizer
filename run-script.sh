@@ -183,7 +183,7 @@ set +o pipefail
 
 FILE="$(tac "${BUILD_LOG}" | grep --max-count=1 -A 1 '^Error' | grep '^File "[^"]*", line [0-9]*, characters [0-9-]*:' | grep -o '^File "[^"]*' | sed 's/^File "//g; s,^\./\+,,g')"
 DEBUG_PREFIX="$(tac "${BUILD_LOG}" | grep -A 1 -F "$FILE" | grep --max-count=1 -o 'MINIMIZER_DEBUG: info: .*' | sed 's/^MINIMIZER_DEBUG: info: //g')"
-EXEC="$(cat "${DEBUG_PREFIX}.exec" | sed "s,${COQ_CI_BASE_BUILD_DIR}/,${CI_BASE_BUILD_DIR}/coq-failing/,g")"
+EXEC="$(cat "${DEBUG_PREFIX}.exec" | sed "s,${COQ_CI_BASE_BUILD_DIR}/,${CI_BASE_BUILD_DIR}/coq-failing/,g; s,rocq compile,coqc,g; s,rocq.orig compile,coqc.orig,g; s,rocq c,coqc,g; s,rocq.orig c,coqc.orig,g")"
 COQPATH="$(cat "${DEBUG_PREFIX}.coqpath" | sed "s,${COQ_CI_BASE_BUILD_DIR}/,${CI_BASE_BUILD_DIR}/coq-failing/,g")"
 EXEC_PWD="$(cat "${DEBUG_PREFIX}.pwd" | sed "s,${COQ_CI_BASE_BUILD_DIR}/,${CI_BASE_BUILD_DIR}/coq-failing/,g")"
 COQLIB="$(cat "${DEBUG_PREFIX}.config" | sed "s,${COQ_CI_BASE_BUILD_DIR}/,${CI_BASE_BUILD_DIR}/coq-failing/,g" | grep --max-count=1 '^COQLIB=\|^ROCQLIB=' | sed 's/^COQLIB=//g; s/^ROCQLIB=//g')"
