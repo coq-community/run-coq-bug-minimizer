@@ -19,7 +19,7 @@ jobs:
         echo "export GITHUB_WORKFLOW_URL='${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}'" >> github-url.sh
     - run: df -h
     - name: Run minimizer
-      uses: coq-community/docker-coq-action@v1.5.0
+      uses: coq-community/docker-coq-action@v1.5.1
       with:
         #custom_image: 'registry.gitlab.com/coq/coq:CACHEKEY'
         #coq_version: 'latest'
