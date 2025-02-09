@@ -175,7 +175,7 @@ done
 
 # ${ocamlpath_fragment}
 
-debug_prefix="\$(mktemp --tmpdir tmp-coqbot-minimizer.XXXXXXXXXX)"
+debug_prefix="\$(mktemp --tmpdir=/tmp tmp-coqbot-minimizer.XXXXXXXXXX)"
 printf "%s" "\$0" > "\${debug_prefix}"
 printf "%s" "\$COQPATH" > "\${debug_prefix}.coqpath"
 printf "%s" "\$OCAMLPATH" > "\${debug_prefix}.ocamlpath"
