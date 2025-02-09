@@ -187,6 +187,7 @@ EXEC="$(cat "${DEBUG_PREFIX}.exec" | sed "s,${COQ_CI_BASE_BUILD_DIR}/,${CI_BASE_
 COQPATH="$(cat "${DEBUG_PREFIX}.coqpath" | sed "s,${COQ_CI_BASE_BUILD_DIR}/,${CI_BASE_BUILD_DIR}/coq-failing/,g")"
 EXEC_PWD="$(cat "${DEBUG_PREFIX}.pwd" | sed "s,${COQ_CI_BASE_BUILD_DIR}/,${CI_BASE_BUILD_DIR}/coq-failing/,g")"
 COQLIB="$(cat "${DEBUG_PREFIX}.config" | sed "s,${COQ_CI_BASE_BUILD_DIR}/,${CI_BASE_BUILD_DIR}/coq-failing/,g" | grep --max-count=1 '^COQLIB=\|^ROCQLIB=' | sed 's/^COQLIB=//g; s/^ROCQLIB=//g')"
+FAILING_OCAMLPATH="$(cat "${DEBUG_PREFIX}.ocamlpath" | sed "s,${COQ_CI_BASE_BUILD_DIR}/,${CI_BASE_BUILD_DIR}/coq-failing/,g")"
 
 FAILING_COQPATH="${COQPATH}"
 FAILING_COQLIB="${COQLIB}"
@@ -201,6 +202,7 @@ PASSING_COQPATH="$(printf "%s" "$COQPATH" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-
 PASSING_COQC="$(printf '%s\n' ${EXEC} | head -1 | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g" | sed 's,bin/coqtop,bin/coqc,g; s,bin/rocq top,bin/rocq c,g')"
 PASSING_EXEC_PWD="$(printf "%s" "${EXEC_PWD}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 PASSING_COQLIB="$(printf "%s" "${COQLIB}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
+PASSING_OCAMLPATH="$(printf "%s" "${FAILING_OCAMLPATH}" | sed "s,\(${CI_BASE_BUILD_DIR}\)/coq-failing/,\\1/coq-passing/,g")"
 
 PASSING_COQTOP="$(printf "%s" "$PASSING_COQC" | sed 's,bin/coqc,bin/coqtop,g; s,bin/rocq top,bin/rocq c,g')"
 PASSING_COQ_MAKEFILE="$(cd "$(dirname "${PASSING_COQC}")" && readlink -f coq_makefile)"
