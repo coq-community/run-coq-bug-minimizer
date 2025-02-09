@@ -60,7 +60,6 @@ function cleanup() {
             printf '\n' >> "${CUSTOM_REPLY_COQBOT_FILE}"
         fi
     else
-        touch "${BUILD_LOG}" "${BUG_LOG}"
         printf "ERROR=1\n" >> "${METADATA_FILE}"
         printf "%q " "bash" "$DIR/reply-coqbot-error.sh" "$STAMP" "${FILE}${EXTRA_DESCRIPTION}" "${BUILD_LOG}" "${BUG_LOG}" >> "${CUSTOM_REPLY_COQBOT_FILE}"
         printf '\n' >> "${CUSTOM_REPLY_COQBOT_FILE}"
