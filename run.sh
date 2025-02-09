@@ -45,11 +45,11 @@ function cleanup() {
     fi
     printf '%s\n\n' '#!/usr/bin/env bash' 'set -o pipefail' 'DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"' 'source "$DIR/coqbot-config.sh"' > "${CUSTOM_REPLY_COQBOT_FILE}"
 
+    touch "${BUILD_LOG}" "${BACKUP_BUG_LOG}"
+    if [ ! -f "${BUG_LOG}" ] || ! grep -q '[^[:space:]]' < "${BUG_LOG}"; then
+        cp -f "${BACKUP_BUG_LOG}" "${BUG_LOG}"
+    fi
     if [ -f "${FINAL_BUG_FILE}" ]; then
-        touch "${BUILD_LOG}" "${BACKUP_BUG_LOG}"
-        if [ ! -f "${BUG_LOG}" ] || ! grep -q '[^[:space:]]' < "${BUG_LOG}"; then
-            cp -f "${BACKUP_BUG_LOG}" "${BUG_LOG}"
-        fi
         if [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
             printf "TIMEDOUT=1\n" >> "${METADATA_FILE}"
             printf "RESUMPTION_ARGS=%s\n" "${RESUMPTION_ARGS}" >> "${METADATA_FILE}"
