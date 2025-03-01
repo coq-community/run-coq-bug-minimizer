@@ -34,6 +34,9 @@ printf '::endgroup::\n'
 printf "::group::download failing artifacts @ %s %s\n" "${COQ_FAILING_SHA}" "${FAILING_ARTIFACT_URLS}"
 printf "::warning::download failing artifacts @ %s %s\n" "${COQ_FAILING_SHA}" "${FAILING_ARTIFACT_URLS}"
 pushd coq-failing
+# set up saved_build_ci -> _build_ci symlink so that unzips from https://github.com/coq/coq/pull/19925 go to the right place
+mkdir -p _build_ci
+ln -s _build_ci saved_build_ci
 git checkout ${COQ_FAILING_SHA}
 for i in ${FAILING_ARTIFACT_URLS}; do
     hash="$(printf "%s" "$i" | sha1sum | cut -d" " -f1)"
@@ -50,6 +53,9 @@ printf '::endgroup::\n'
 printf "::group::download passing artifacts @ %s %s\n" "${COQ_PASSING_SHA}" "${PASSING_ARTIFACT_URLS}"
 printf "::warning::download passing artifacts @ %s %s\n" "${COQ_PASSING_SHA}" "${PASSING_ARTIFACT_URLS}"
 pushd coq-passing
+# set up saved_build_ci -> _build_ci symlink so that unzips from https://github.com/coq/coq/pull/19925 go to the right place
+mkdir -p _build_ci
+ln -s _build_ci saved_build_ci
 git checkout ${COQ_PASSING_SHA}
 for i in ${PASSING_ARTIFACT_URLS}; do
     hash="$(printf "%s" "$i" | sha1sum | cut -d" " -f1)"
