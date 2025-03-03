@@ -94,21 +94,27 @@ printf '::endgroup::\n'
 
 set +x
 
-printf "::group::make %s (passing)\n" "${CI_TARGET}"
+printf "::group::make %s (%s) (passing)\n" "${CI_TARGET}" "${CI_TARGETS}"
 # mv "${CI_BASE_BUILD_DIR}"/coq-passing "${COQ_CI_BASE_BUILD_DIR}"
 ln -s "${CI_BASE_BUILD_DIR}"/coq-passing "${COQ_CI_BASE_BUILD_DIR}"
 pushd "${COQ_CI_BASE_BUILD_DIR}"
-make -f Makefile.ci GITLAB_CI=1 ${CI_TARGET}
+for target in $CI_TARGETS; do
+    GITLAB_CI=1 dev/ci/ci-wrapper.sh "${target}";
+done
+# make -f Makefile.ci GITLAB_CI=1 ${CI_TARGET}
 popd
 # mv "${COQ_CI_BASE_BUILD_DIR}" "${CI_BASE_BUILD_DIR}"/coq-passing
 rm "${COQ_CI_BASE_BUILD_DIR}"
 printf '::endgroup::\n'
 
-printf "::group::make %s (failing)\n" "${CI_TARGET}"
+printf "::group::make %s (%s) (failing)\n" "${CI_TARGET}" "${CI_TARGETS}"
 # mv "${CI_BASE_BUILD_DIR}"/coq-failing "${COQ_CI_BASE_BUILD_DIR}"
 ln -s "${CI_BASE_BUILD_DIR}"/coq-failing "${COQ_CI_BASE_BUILD_DIR}"
 pushd "${COQ_CI_BASE_BUILD_DIR}"
-{ make -f Makefile.ci GITLAB_CI=1 ${CI_TARGET} 2>&1 | sed "s|${COQ_CI_BASE_BUILD_DIR}/|${CI_BASE_BUILD_DIR}/coq-failing/|g"; } || true
+# { make -f Makefile.ci GITLAB_CI=1 ${CI_TARGET} 2>&1 | sed "s|${COQ_CI_BASE_BUILD_DIR}/|${CI_BASE_BUILD_DIR}/coq-failing/|g"; } || true
+for target in $CI_TARGETS; do
+    { GITLAB_CI=1 dev/ci/ci-wrapper.sh "${target}" 2>&1 | sed "s|${COQ_CI_BASE_BUILD_DIR}/|${CI_BASE_BUILD_DIR}/coq-failing/|g"; } || true
+done
 popd
 # mv "${COQ_CI_BASE_BUILD_DIR}" "${CI_BASE_BUILD_DIR}"/coq-failing
 rm "${COQ_CI_BASE_BUILD_DIR}"

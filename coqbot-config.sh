@@ -48,8 +48,6 @@ RESUMPTION_ARGS="$(cat "$DIR/coqbot.resumption-args" 2>/dev/null; printf '.\n')"
 RESUMPTION_ARGS="${RESUMPTION_ARGS:0:-1}"
 export RESUMPTION_ARGS # Only used for communicating with coqbot on minimization resumption
 export CI_TARGET="$(cat "$DIR/coqbot.ci-target")"
-# kludge while we wait for https://github.com/coq/bot/pull/336 to land
-touch "$DIR/coqbot.ci-targets"
 export CI_TARGETS="$(cat "$DIR/coqbot.ci-targets")"
 export CI_BASE_BUILD_DIR="$DIR/builds/coq"
 export COQ_CI_BASE_BUILD_DIR="/builds/coq/coq"
