@@ -35,6 +35,7 @@ function cleanup() {
     if [ ! -z "${CI_TARGET}" ]; then
         EXTRA_DESCRIPTION="${EXTRA_DESCRIPTION} (from ${CI_TARGET})"
     fi
+    printf "CI_TARGETS=%s\n" "${CI_TARGETS}" >> "${METADATA_FILE}"
     if [ -f "${TIMEDOUT_STAMP_FILE}" ]; then # timeout!
         EXTRA_DESCRIPTION="${EXTRA_DESCRIPTION} (interrupted by timeout"
         if [ ! -z "${COQBOT_RESUME_MINIMIZATION_URL}" ]; then
